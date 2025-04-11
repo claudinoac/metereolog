@@ -22,6 +22,8 @@ void loop(){
     dht_reading = dht_sensor->read();
     Serial.print("\nTemperature: ");
     Serial.print(dht_reading.temperature);
+    Serial.print(" °C");
     Serial.print("\nHumidity: ");
     Serial.print(dht_reading.humidity);
+    Serial.print(" %");
 };
