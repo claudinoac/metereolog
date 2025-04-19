@@ -64,7 +64,7 @@ void setup(){
     Serial.print("-----\n\n\n");
     wifi_client = new Wifi(ssid, password);
     mqtt_client = new MQTT(wifi_client, broker_addr, broker_port, broker_user, broker_password, client_id);
-    Serial.print("Sistema de monitoramento climático iniciado\n");
+    Serial.print("Climate monitoring system started\n");
 };
 
 void loop(){
@@ -78,6 +78,9 @@ void loop(){
     Serial.print(" %");
     Serial.print("\n Wind Direction: ");
     Serial.print(wind_direction_reading.direction.c_str());
+    Serial.print(" (");
+    Serial.print(wind_direction_reading.angle);
+    Serial.print("º)");
     Serial.print(" Analog Voltage: ");
     Serial.print(wind_direction_reading.voltage);
     Serial.print("V")
@@ -89,6 +92,7 @@ void loop(){
 
     wind_sensor["direction"] = wind_direction_reading.direction.c_str();
     wind_sensor["voltage"] = wind_direction_reading.voltage.c_str();
+    wind_sensor["angle"] = wind_direction_reading.angle;
     dht["temperature"] = dht_reading.temperature;
     dht["humidity"] = dht_reading.humidity;
     vals["dht"] = dht;
