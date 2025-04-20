@@ -1,0 +1,42 @@
+services:
+  rabbitmq:
+    image: rabbitmq:4.1-management-alpine
+    container_name: met-rmq
+    environment:
+      RABBITMQ_DEFAULT_USER: "metereolog"
+      RABBITMQ_DEFAULT_PASS: "metereolog"
+    volumes:
+      - "./.rmq_enabled_plugins:/etc/rabbitmq/enabled_plugins"
+    ports:
+      - 5675:5672
+      - 15675:15672
+      - 1883:1883
+    networks:
+      - metereolog
+  api: &server-recipe
+    build:
+      context: "./backend"  
+      dockerfile: "metereolog.dockerfile"
+    image: metereolog-server 
+    pull_policy: never
+    command: "python manage.py runserver 0.0.0.0:8009"
+    volumes:
+      - ./backend:/code
+    ports: 
+      - 8009:8009
+    environment:
+      SECRET_KEY: "a0RWOUNHbStmRkZsTjY1dUE3QXphSWJ1YWtVPQo" # change this for production environment
+    stdin_open: true
+    tty: true
+    networks:
+      - metereolog
+    container_name: met-api
+  message-hub:
+    <<: *server-recipe
+    ports: []
+    command: python manage.py run_message_hub 
+    container_name: met-msg-hub
+networks:
+  metereolog:
+    external:
+      name: metereolog

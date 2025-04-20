@@ -1,0 +1,50 @@
+from pathlib import Path
+from os import environ
+from metereolog.settings.base import *  # noqa
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+SECRET_KEY = environ.get("SECRET_KEY")
+
+DEBUG = True
+
+ALLOWED_HOSTS = []
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+}
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
+]
+
+BROKER_URL = "amqp://metereolog:metereolog@rabbitmq:5672/"
