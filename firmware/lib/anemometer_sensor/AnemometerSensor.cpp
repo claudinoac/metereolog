@@ -1,13 +1,18 @@
-
 #include "AnemometerSensor.hpp"
+#include <Arduino.h>
 
-// Definição da variável estática (OBRIGATÓRIO)
-AnemometerSensor* AnemometerSensor::instance = nullptr;
+AnemometerSensor* anemometer = nullptr;
 
-// Implementação do construtor
+// Interrupt routine Handler (defined outside class)
+void IRAM_ATTR isrHandler() {
+    if (AnemometerSensor::getInstance() != nullptr) {
+        AnemometerSensor::getInstance()->handleInterrupt();
+    }
+}
+
 AnemometerSensor::AnemometerSensor(gpio_num_t pin) 
     : pin(pin), pulseCount(0), ts_read(0) {
-    instance = this; // Atribui a instância atual
+    anemometer = this; // Turn this class into a singleton
     
     gpio_pad_select_gpio(pin);
     gpio_set_direction(pin, GPIO_MODE_INPUT);
@@ -15,12 +20,15 @@ AnemometerSensor::AnemometerSensor(gpio_num_t pin)
     attachInterrupt(digitalPinToInterrupt(pin), isrHandler, FALLING);
 }
 
-// Implementação da ISR
+AnemometerSensor *AnemometerSensor::getInstance() {
+    return anemometer;
+}
+
+// interrupt handler to count pulses
 void IRAM_ATTR AnemometerSensor::handleInterrupt() {
     pulseCount++;
 }
 
-// Implementação do método read
 AnemometerInfo AnemometerSensor::read() {
     AnemometerInfo info = {0, 0};
     delay(1000); // Medição por 1 segundo
@@ -37,9 +45,3 @@ AnemometerInfo AnemometerSensor::read() {
     return info;
 }
 
-// Handler da ISR (definido fora da classe)
-void IRAM_ATTR isrHandler() {
-    if (AnemometerSensor::getInstance() != nullptr) {
-        AnemometerSensor::getInstance()->handleInterrupt();
-    }
-}

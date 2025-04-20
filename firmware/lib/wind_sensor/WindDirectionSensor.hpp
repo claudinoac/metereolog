@@ -8,7 +8,7 @@
 typedef struct {
     float voltage;       // tensão lida
     int angle;          // ângulo da direção
-    std::string direction; // direção em texto
+    char direction[3]; // direção em texto
 } WindDirectionInfo;
 
 class WindDirectionSensor {

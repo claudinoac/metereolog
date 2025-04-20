@@ -7,7 +7,7 @@
 
 typedef struct {
     float wind_speed;    // km/h
-    unsigned int pulses; // contagem de pulsos
+    unsigned int pulses; // pulse count
 } AnemometerInfo;
 
 class AnemometerSensor {
@@ -15,15 +15,12 @@ class AnemometerSensor {
         AnemometerSensor(gpio_num_t pin);
         AnemometerInfo read();
         void IRAM_ATTR handleInterrupt();
-        
-        // Método estático para acessar a instância (opcional)
-        static AnemometerSensor* getInstance() { return instance; }
+        static AnemometerSensor *getInstance();
         
     private:
         gpio_num_t pin;
         volatile unsigned int pulseCount;
         unsigned long ts_read;
-        static AnemometerSensor* instance; // Declaração
 };
 
 #endif

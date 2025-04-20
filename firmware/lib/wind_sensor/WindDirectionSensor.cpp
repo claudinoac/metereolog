@@ -11,7 +11,7 @@ WindDirectionInfo WindDirectionSensor::read() {
     info.voltage = raw * (3.3 / 4095.0);
     lastVoltage = info.voltage;
 
-    // Determina ângulo
+    // Determines angle
     if (info.voltage <= 2.90) info.angle = 0;
     else if (info.voltage <= 3.05) info.angle = 315;
     else if (info.voltage <= 3.25) info.angle = 270;
@@ -22,17 +22,17 @@ WindDirectionInfo WindDirectionSensor::read() {
     else if (info.voltage <= 4.65) info.angle = 45;
     else info.angle = 0; // FAIL
 
-    // Determina direção textual
+    // Determines direction
     switch (info.angle) {
-        case 0: info.direction = "Norte"; break;
-        case 45: info.direction = "Nordeste"; break;
-        case 90: info.direction = "Leste"; break;
-        case 135: info.direction = "Sudeste"; break;
-        case 180: info.direction = "Sul"; break;
-        case 225: info.direction = "Sudoeste"; break;
-        case 270: info.direction = "Oeste"; break;
-        case 315: info.direction = "Noroeste"; break;
-        default: info.direction = "FAIL";
+        case 0: strcpy(info.direction, "N"); break;
+        case 45: strcpy(info.direction, "NE"); break;
+        case 90: strcpy(info.direction, "E"); break;
+        case 135: strcpy(info.direction, "SE"); break;
+        case 180: strcpy(info.direction, "S"); break;
+        case 225: strcpy(info.direction, "SW"); break;
+        case 270: strcpy(info.direction, "W"); break;
+        case 315: strcpy(info.direction, "NW"); break;
+        default: strcpy(info.direction, "Er");
     }
 
     return info;

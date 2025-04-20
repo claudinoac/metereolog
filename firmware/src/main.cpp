@@ -68,6 +68,7 @@ void setup(){
 };
 
 void loop(){
+    // Reading DHT Temperature and Humidity Sensor
     dht_reading = dht_sensor->read();
     WindDirectionInfo wind_direction_reading = wind_direction_sensor->read();
     Serial.print("\nTemperature: ");
