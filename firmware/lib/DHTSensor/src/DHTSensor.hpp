@@ -8,7 +8,7 @@
  *        Version:  0.1.1
  *        Created:  05/04/2025 03:06:51
  *       Revision:  none
- *       Compiler:  gcc
+ *       Compiler:  clang
  *
  *         Author:  Alisson Claudino, 
  *   Organization:  UFSC
