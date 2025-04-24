@@ -14,7 +14,7 @@
 #include "WindDirectionSensor.hpp"
 
 #define GPIO_PIN_4 (gpio_num_t) 4
-#define WIIND_DIRECTION_PIN (gpio_num_t) 34
+#define WIIND_DIRECTION_PIN (gpio_num_t) 32
 #define ANEMOMETER_PIN (gpio_num_t) 35
 
 DHTSensor *dht_sensor;

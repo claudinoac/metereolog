@@ -1,6 +1,8 @@
 #include "WindDirectionSensor.hpp"
+#include "driver/adc.h"
 
 WindDirectionSensor::WindDirectionSensor(gpio_num_t pin) : pin(pin), lastVoltage(0.0) {
+    analogSetPinAttenuation(pin, ADC_6db);
     gpio_pad_select_gpio(pin);
     gpio_set_direction(pin, GPIO_MODE_INPUT);
 }
@@ -8,19 +10,18 @@ WindDirectionSensor::WindDirectionSensor(gpio_num_t pin) : pin(pin), lastVoltage
 WindDirectionInfo WindDirectionSensor::read() {
     WindDirectionInfo info = {0.0, 0, ""};
     int raw = analogRead((uint8_t)pin);
-    info.voltage = raw * (3.3 / 4095.0);
+    info.voltage = raw * (1.7 / 4095.0);
     lastVoltage = info.voltage;
 
     // Determines angle
-    if (info.voltage <= 2.90) info.angle = 0;
-    else if (info.voltage <= 3.05) info.angle = 315;
-    else if (info.voltage <= 3.25) info.angle = 270;
-    else if (info.voltage <= 3.45) info.angle = 225;
-    else if (info.voltage <= 3.75) info.angle = 180;
-    else if (info.voltage <= 4.00) info.angle = 135;
-    else if (info.voltage <= 4.25) info.angle = 90;
-    else if (info.voltage <= 4.65) info.angle = 45;
-    else info.angle = 0; // FAIL
+    if (info.voltage >= 1.5 ) info.angle = 45; // NE
+    else if (info.voltage >= 1.1) info.angle = 90; // E
+    else if (info.voltage >= 0.8) info.angle = 135; // SE
+    else if (info.voltage >= 0.7) info.angle = 180; // S
+    else if (info.voltage >= 0.55) info.angle = 225; // SW
+    else if (info.voltage >= 0.5) info.angle = 270; // W
+    else if (info.voltage >= 0.4) info.angle = 315; // NW
+    else info.angle = 0; // N
 
     // Determines direction
     switch (info.angle) {
