@@ -6,23 +6,24 @@ O DHT11 é um sensor digital amplamente utilizado para medir temperatura e umida
 
 ### 1   Dados Técnicos do Sensor DHT11
 
-**Característica** | **Descrição**
-Tipo | Sensor digital de temperatura e umidade
-Tensão de operação | 3.3V a 5V
-Corrente típica | 0.5 mA
-Faixa de temperatura | 0 °C a 50 °C (±2 °C)
-Faixa de umidade | 20% a 90% UR (±5%)
-Frequência de leitura | 1 Hz (1 leitura por segundo)
-Saída de sinal | Digital (protocolo próprio via 1 fio)
+|**Característica**   | **Descrição**                          | 
+|---------------------|----------------------------------------|
+|Tipo                 | Sensor digital de temperatura e umidade|
+|Tensão de operação   | 3.3V a 5 V                             |
+|Corrente típica      | 0.5 mA                                 |
+|Faixa de temperatura | 0 °C a 50 °C (±2 °C)                   |
+|Faixa de umidade     | 20% a 90% UR (±5%)                     |
+|Frequência de leitura| 1 Hz (1 leitura por segundo)           | 
+|Saída de sinal       | Digital (protocolo próprio via 1 fio)  |
 
 ---
 
 ### 2  Pinagem do DHT11
-
-**Pino** |**Função**
-VCC | Alimentação (+5 V ou +3.3 V)
-GND | Terra
-DATA | Sinal digital
+|**Pino** |**Função**                    |
+|---------|------------------------------|
+|VCC      | Alimentação (+5 V ou +3.3 V) |
+|GND      | Terra                        |
+|DATA     | Sinal digital                |
 
 ---
 
