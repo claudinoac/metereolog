@@ -52,6 +52,7 @@ void setup(){
     wind_direction_sensor = new WindDirectionSensor(WIIND_DIRECTION_PIN);
     anemometer_sensor = new Anemometer(GPIO_PIN_2);
     mq6_sensor = new MQ6Sensor(ADC1_CHANNEL_6);
+    pinMode(GPIO_PIN_2, INPUT_PULLUP);
     Ro = mq6_sensor->calibrate(RL);
     delay(1000);
 
@@ -103,10 +104,10 @@ void loop() {
     Serial.print("V\n");
     Serial.print("\nSpeed: ");
     Serial.print(anemometer_reading.windSpeed);
-    Serial.print(" m/s");
-    Serial.print("\nRotation per second: ");
+    Serial.print(" km/h");
+    Serial.print("\nRPM: ");
     Serial.println(anemometer_reading.rotations);
-    Serial.print("\nPPM:");
+    Serial.print("PPM: ");
     Serial.println(ppm);
 
     Serial.print("\n Publishing results to MQTT topic ");

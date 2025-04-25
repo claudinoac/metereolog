@@ -11,7 +11,7 @@ typedef struct {
 
 class Anemometer {
 public:
-    Anemometer(gpio_num_t pin, float radius = 9.0);
+    Anemometer(gpio_num_t pin, float radius = 14.7);
     WindInfo read();
 
 private:

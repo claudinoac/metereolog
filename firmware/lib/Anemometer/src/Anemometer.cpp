@@ -16,7 +16,7 @@ Anemometer::Anemometer(gpio_num_t pin, float radius_cm) {
 
     static bool isr_service_installed = false;
     if (!isr_service_installed) {
-        gpio_install_isr_service(0); // instala apenas uma vez
+        gpio_install_isr_service(0); 
         isr_service_installed = true;
     }
 
@@ -30,19 +30,24 @@ WindInfo Anemometer::read() {
     unsigned long now = millis();
     unsigned long elapsed = now - lastReadTime;
 
+    if (elapsed == 0) elapsed = 1;  // Evitar divisão por zero
+
     noInterrupts();
     unsigned int count = global_pulse_count;
     global_pulse_count = 0;
     interrupts();
 
     float seconds = elapsed / 1000.0;
-    float rotations = count / 2.0; // 2 pulsos = 1 volta
-    float frequency = rotations / seconds;
-    float v = 2 * PI * (radius / 100.0) * frequency;
+    float frequency = count / seconds; // rotações por segundo
+    float v_ms = 4 * PI * (radius/100) * frequency; // velocidade em m/s
+    float v_kmh = v_ms * 3.6; // velocidade em km/h
+    float rpm = frequency * 60;
 
-    info.windSpeed = v;
-    info.rotations = frequency;
+    info.windSpeed = v_kmh;
+    info.rotations = rpm;
     lastReadTime = now;
 
     return info;
 }
+
+
