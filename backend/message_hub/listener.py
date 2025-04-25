@@ -41,6 +41,8 @@ class MessageHubListener:
                 self.connection.drain_events(timeout=1)
             except socket.timeout:
                 self.connection.heartbeat_check()
+            except Exception as exc:
+                pass
 
     def handle_message(self, body, message):
         try:
