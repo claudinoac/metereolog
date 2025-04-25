@@ -56,7 +56,7 @@ void setup(){
     Serial.print("Password is -----");
     Serial.print(password);
     Serial.print("-----\n\n\n");
-    Serial.print("\nEnter broker address: ")
+    Serial.print("\nEnter broker address: ");
     while (!Serial.available()){};
     broker_addr = strdup(Serial.readStringUntil('\n').c_str());
     Serial.print("Broker address is: -----");
@@ -78,22 +78,23 @@ void loop(){
     Serial.print(dht_reading.humidity);
     Serial.print(" %");
     Serial.print("\n Wind Direction: ");
-    Serial.print(wind_direction_reading.direction.c_str());
+    Serial.print(wind_direction_reading.direction);
     Serial.print(" (");
     Serial.print(wind_direction_reading.angle);
     Serial.print("º)");
     Serial.print(" Analog Voltage: ");
     Serial.print(wind_direction_reading.voltage);
-    Serial.print("V")
+    Serial.print("V\n");
 
-    Serial.print("Publishing results to MQTT topic ")
+    Serial.print("\n Publishing results to MQTT topic ");
+    Serial.print(mqtt_topic);
     JsonDocument vals;
     JsonDocument dht;
     JsonDocument wind_sensor;
 
-    wind_sensor["direction"] = wind_direction_reading.direction.c_str();
-    wind_sensor["voltage"] = wind_direction_reading.voltage.c_str();
-    wind_sensor["angle"] = wind_direction_reading.angle;
+    wind_sensor["direction"] = wind_direction_reading.direction;
+    wind_sensor["voltage"] = wind_direction_reading.voltage;
+    // wind_sensor["angle"] = wind_direction_reading.angle;
     dht["temperature"] = dht_reading.temperature;
     dht["humidity"] = dht_reading.humidity;
     vals["dht"] = dht;
