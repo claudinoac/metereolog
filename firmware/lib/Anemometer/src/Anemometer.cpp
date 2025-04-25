@@ -39,7 +39,7 @@ WindInfo Anemometer::read() {
 
     float seconds = elapsed / 1000.0;
     float frequency = count / seconds; // rotações por segundo
-    float v_ms = 4 * PI * (radius/100) * frequency; // velocidade em m/s
+    float v_ms = 2 * PI * (radius/100) * frequency; // velocidade em m/s
     float v_kmh = v_ms * 3.6; // velocidade em km/h
     float rpm = frequency * 60;
 

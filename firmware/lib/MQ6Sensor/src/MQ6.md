@@ -1,9 +1,5 @@
 ## Sensor de Gás MQ‑6
 
-<p align="center">
-  <img src="C:\Users\gabri\Desktop\Projeto Integrador/2120.jpg" width="250">
-</p>
-
 O sensor MQ‑6 detecta principalmente **GLP (propano/​butano)**, podendo responder ainda a gás natural e fumaça. É muito usado em alarmes de vazamento e sistemas de monitoramento de qualidade do ar.
 
 ---
@@ -21,7 +17,7 @@ O sensor MQ‑6 detecta principalmente **GLP (propano/​butano)**, podendo resp
 
 ---
 
-### 2  Pinagem do MQ‑6 (módulo FC‑22)
+### 2  Pinagem do MQ‑6 
 
 | **Pino** | **Função** | **Descrição**        |
 |:-------:|-----------|-----------------------|
