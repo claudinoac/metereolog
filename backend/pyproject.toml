@@ -1,0 +1,37 @@
+[tool.poetry]
+name = "metereolog"
+version = "0.0.1"
+description = "A web platform to collect weather telemetry data"
+authors = [
+    "Alisson Claudino",
+    "João Pinto Ferreira",
+    "Gabriel Mason"
+]
+license = "GNU GPLv3"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.8"
+django = "==4.2"
+requests = ">=2.32.3,<3.0.0"
+
+[tool.poetry.group.amd64]
+optional = true
+[tool.poetry.group.amd64.dependencies]
+kombu = ">=5.5.3,<6.0.0"
+
+[tool.poetry.group.arm64]
+optional = true
+[tool.poetry.group.arm64.dependencies]
+kombu = ">=5.5.3,<6.0.0"
+
+
+[tool.poetry.group.dev]
+optional = true
+[tool.poetry.group.dev.dependencies]
+# developer utils
+ipdb = "*"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

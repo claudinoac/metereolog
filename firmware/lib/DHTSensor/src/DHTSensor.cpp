@@ -3,15 +3,15 @@
  *
  *       Filename:  DHTSensor.cpp
  *
- *    Description:  
+ *    Description: Basic Wrapper for DHT sensor
  *
- *        Version:  1.0
+ *        Version:  0.1.1
  *        Created:  05/04/2025 04:06:41
  *       Revision:  none
- *       Compiler:  gcc
+ *       Compiler:  clang
  *
- *         Author:  YOUR NAME (), 
- *   Organization:  
+ *         Author:  Alisson Claudino
+ *   Organization:  UFSC
  *
  * =====================================================================================
  */

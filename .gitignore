@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+
+# python cache
+*__pycache__*
+*.pyc
+
+# sqlite temp databases
+*.sqlite3
+*.vscode
+*.cache*
