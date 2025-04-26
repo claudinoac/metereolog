@@ -2,9 +2,12 @@ from kombu import Connection, Consumer, Queue, Exchange
 from django.conf import settings
 import logging
 import socket
-from json import loads as json_loads, JSONDecodeError
+from json import loads as json_loads, dumps as json_dumps, JSONDecodeError
+from pprint import PrettyPrinter
+
 
 logger = logging.getLogger(__name__)
+pp = PrettyPrinter()
 
 
 class MessageHubListener:
@@ -46,8 +49,11 @@ class MessageHubListener:
 
     def handle_message(self, body, message):
         try:
+            routing_key = message.delivery_info["routing_key"]
+            _, user, device = routing_key.split(".")
             payload = json_loads(body)
-            logger.info(f"Payload received: {payload}")
+            payload_display = json_dumps(payload, indent=4)
+            logger.info(f"Payload received from device {device} using user {user}: {payload_display}")
         except JSONDecodeError:
             logger.error("Invalid message: {body}")
         message.ack()

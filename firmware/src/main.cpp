@@ -31,17 +31,19 @@ DHTInfo dht_reading;
 MQTT *mqtt_client;
 Wifi *wifi_client;
 
-char* ssid = NULL;
-char* password = NULL;
+char* ssid = "Redmi Note 13";
+char* password = "Pinto1995";
 char *broker_addr = "192.168.0.11";
 int broker_port = 1883;
 char *broker_user = "metereolog";
 char *broker_password = "metereolog";
 char *client_id = "esp32_met_cit";
-char *mqtt_topic = "mqtt.metereolog.esp32_met_cit";
+char *mqtt_topic = "mqtt.metereolog.esp32MetCit";
 
 WindDirectionSensor *wind_direction_sensor;
 WindDirectionInfo wind_direction_reading;
+
+StaticJsonDocument<256> doc;
 
 
 float Ro = 0.0f;
@@ -60,18 +62,18 @@ void setup(){
     while (!Serial.available()){};
     Serial.print("\n\nEnter wifi SSID: ");
     while (!Serial.available()){};
-    ssid = strdup(Serial.readStringUntil('\n').c_str());
-    ssid[strlen(ssid) - 1] = '\0';
-    Serial.print("SSID is -----");
-    Serial.print(ssid);
-    Serial.print("-----\n\n\n");
-    Serial.print("\nEnter wifi Password: ");
-    while (!Serial.available()){};
-    password = strdup(Serial.readStringUntil('\n').c_str());
-    password[strlen(password) - 1] = '\0';
-    Serial.print("Password is -----");
-    Serial.print(password);
-    Serial.print("-----\n\n\n");
+    // ssid = strdup(Serial.readStringUntil('\n').c_str());
+    // ssid[strlen(ssid) - 1] = '\0';
+    // Serial.print("SSID is -----");
+    // Serial.print(ssid);
+    // Serial.print("-----\n\n\n");
+    // Serial.print("\nEnter wifi Password: ");
+    // while (!Serial.available()){};
+    // password = strdup(Serial.readStringUntil('\n').c_str());
+    // password[strlen(password) - 1] = '\0';
+    // Serial.print("Password is -----");
+    // Serial.print(password);
+    // Serial.print("-----\n\n\n");
     Serial.print("\nEnter broker address: ");
     while (!Serial.available()){};
     broker_addr = strdup(Serial.readStringUntil('\n').c_str());
@@ -112,28 +114,21 @@ void loop() {
 
     Serial.print("\n Publishing results to MQTT topic ");
     Serial.print(mqtt_topic);
-    JsonDocument vals;
-    JsonDocument dht;
-    JsonDocument wind_sensor;
 
+    JsonObject dht = doc.createNestedObject("dht");
+    JsonObject wind_sensor = doc.createNestedObject("wind_sensor");
+    dht["temperature"] = dht_reading.temperature;
+    dht["humidity"] = dht_reading.humidity;
     wind_sensor["direction"] = wind_direction_reading.direction;
     wind_sensor["voltage"] = wind_direction_reading.voltage;
     wind_sensor["speed"] = anemometer_reading.windSpeed;
     wind_sensor["rpm"] = anemometer_reading.rotations;
-    // wind_sensor["angle"] = wind_direction_reading.angle;
+    wind_sensor["angle"] = wind_direction_reading.angle;
+    doc["mq-6"]["glp"] = ppm;
 
-    JsonDocument vals;
-    JsonDocument dht;
-    JsonDocument wind_sensor;
 
-    dht["temperature"] = dht_reading.temperature;
-    dht["humidity"] = dht_reading.humidity;
-    vals["dht"] = dht;
-    vals["wind_sensor"] = wind_sensor;
-
-    mqtt_client->publish(mqtt_topic, vals);
+    mqtt_client->publish(mqtt_topic, doc);
 
     Serial.print("\n\nWaiting 1 second for new reading...\n");
-    mqtt_client->publish(mqtt_topic, vals);
     delay(1000);
 }

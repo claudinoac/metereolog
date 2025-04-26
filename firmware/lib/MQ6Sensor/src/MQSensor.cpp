@@ -20,7 +20,7 @@ MQ6Info MQ6Sensor::read() {
 }
 
 float MQ6Sensor::calibrate(float RL) {
-    const int samples = 50;
+    const int samples = 10;
     const int delayBetweenSamples = 200; // ms
     float Rs_sum = 0.0f;
     int valid_samples = 0;
