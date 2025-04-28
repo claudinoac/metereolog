@@ -5,7 +5,7 @@ ARG POETRY_VERSION=1.7.1
 SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update \
-    && apt-get install --no-install-recommends curl default-libmysqlclient-dev build-essential -y \
+    && apt-get install --no-install-recommends curl default-libmysqlclient-dev build-essential libpq-dev -y \
     && rm -rf /var/lib/apt/lists/* \
     && pip install -U pip setuptools wheel poetry \
     && poetry config virtualenvs.create false
