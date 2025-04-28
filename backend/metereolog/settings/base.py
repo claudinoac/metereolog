@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "message_hub",
     "iam",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
