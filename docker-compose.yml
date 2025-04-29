@@ -13,6 +13,18 @@ services:
       - 1883:1883
     networks:
       - metereolog
+  postgres:
+    image: postgres:17-bullseye
+    container_name: met-postgres
+    shm_size: 128mb
+    environment:
+      POSTGRES_USER: metereolog
+      POSTGRES_PASSWORD: metereolog
+    volumes:
+      - ./backend/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh:ro
+    networks:
+      - metereolog
+
   api: &server-recipe
     build:
       context: "./backend"  
@@ -31,11 +43,16 @@ services:
     networks:
       - metereolog
     container_name: met-api
+    depends_on:
+      - postgres
   message-hub:
     <<: *server-recipe
     ports: []
     command: python manage.py run_message_hub 
     container_name: met-msg-hub
+    depends_on:
+      - postgres
+      - rabbitmq
 networks:
   metereolog:
     external:
