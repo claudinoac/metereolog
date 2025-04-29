@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import Group
 
-from iam.models import User
+from iam.models import User, Organization
 
 
 class UserCreationForm(UserCreationForm):
@@ -39,5 +39,10 @@ class UserAdmin(UserAdmin):
     ordering = ("email", "first_name", "last_name")
 
 
+class OrganizationAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(Organization, OrganizationAdmin)
 admin.site.register(User, UserAdmin)
 admin.site.unregister(Group)

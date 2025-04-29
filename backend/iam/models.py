@@ -2,6 +2,15 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 
+class Organization(models.Model):
+    name = models.CharField(max_length=64)
+    is_active = models.BooleanField(default=True)
+
+    @property
+    def users(self):
+        return self.user_set.all()
+
+
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -28,6 +37,7 @@ class User(AbstractBaseUser):
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     ts_created = models.DateTimeField(auto_now_add=True)
+    organization = models.ForeignKey(to=Organization, on_delete=models.CASCADE, null=True)
 
     objects = UserManager()
 
