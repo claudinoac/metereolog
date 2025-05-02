@@ -24,7 +24,6 @@ init:  ### Install dependencies and start applications
 	 " -> Fedora: https://docs.docker.com/install/linux/docker-ce/fedora/ "; exit 1;)
 	@ -docker network create metereolog
 	@ docker-compose up -d
-	@ docker compose exec rabbitmq sh -c "rabbitmq-plugins enable rabbitmq_mqtt"
 	@ make migrations
 	@ make migrate
 	@ $(EXEC) python3 manage.py createsuperuser
