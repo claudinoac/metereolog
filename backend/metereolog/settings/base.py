@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "message_hub",
     "iam",
     "sensor",
+    "device",
     "django_extensions",
 ]
 

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from sensor.models import Sensor
+from sensor.models import Sensor, SensorReading
 
 
 class SensorAdmin(admin.ModelAdmin):
@@ -8,3 +8,4 @@ class SensorAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Sensor, SensorAdmin)
+admin.site.register(SensorReading)
