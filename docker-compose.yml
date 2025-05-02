@@ -15,7 +15,7 @@ services:
       - metereolog
     user: "999"
   postgres:
-    image: postgres:17-bullseye
+    image: timescale/timescaledb-ha:pg17
     container_name: met-postgres
     shm_size: 128mb
     environment:
