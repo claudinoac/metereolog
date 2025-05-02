@@ -24,7 +24,6 @@ init:  ### Install dependencies and start applications
 	 " -> Fedora: https://docs.docker.com/install/linux/docker-ce/fedora/ "; exit 1;)
 	@ -docker network create metereolog
 	@ docker-compose up -d
-	@ docker compose exec rabbitmq sh -c "rabbitmq-plugins enable rabbitmq_mqtt"
 	@ make migrations
 	@ make migrate
 	@ $(EXEC) python3 manage.py createsuperuser
@@ -40,6 +39,14 @@ migrate: run-detached  ### Apply pending migrations
 .PHONY: superuser
 superuser: run-detached  ### Create a superuser
 	@ $(EXEC) python3 manage.py createsuperuser
+
+.PHONY: shell
+shell: run-detached  ### Opens the application shell
+	@ $(EXEC) python3 manage.py shell_plus
+
+.PHONY: bash
+bash: run-detached  ### Opens the application shell
+	@ $(EXEC) bash
 
 .PHONY: run-detached
 run-detached:
