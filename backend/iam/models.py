@@ -1,5 +1,22 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.utils.translation import gettext_lazy as _
+
+
+class Permission(models.Model):
+    class Meta:
+        unique_together = ["resource_type", "operation"]
+
+    class OperationTypes(models.TextChoices):
+        CREATE = "create", _("Create")
+        LIST = "list", _("List")
+        READ = "read", _("Read")
+        UPDATE = "update", _("Update")
+        DELETE = "delete", _("Delete")
+
+    name = models.CharField(max_length=255)
+    resource_type = models.CharField(max_length=64)
+    operation = models.CharField(max_length=32, choices=OperationTypes.choices)
 
 
 class Organization(models.Model):
