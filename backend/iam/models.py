@@ -43,7 +43,6 @@ class Role(models.Model):
     def __str__(self):
         return f"{self.name} - Org: {self.organization.name} <{self.id}>"
 
-
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
