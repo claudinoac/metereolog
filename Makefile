@@ -40,6 +40,14 @@ migrate: run-detached  ### Apply pending migrations
 superuser: run-detached  ### Create a superuser
 	@ $(EXEC) python3 manage.py createsuperuser
 
+.PHONY: shell
+shell: run-detached  ### Opens the application shell
+	@ $(EXEC) python3 manage.py shell_plus
+
+.PHONY: bash
+bash: run-detached  ### Opens the application shell
+	@ $(EXEC) bash
+
 .PHONY: run-detached
 run-detached:
 	@ docker compose up -d --no-recreate
