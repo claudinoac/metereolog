@@ -26,6 +26,7 @@ init:  ### Install dependencies and start applications
 	@ docker-compose up -d
 	@ make migrations
 	@ make migrate
+	@ $(EXEC) python manage.py loaddata metereolog/fixtures/initial_data.json
 	@ $(EXEC) python3 manage.py createsuperuser
 
 .PHONY: migrations $(ARGS)

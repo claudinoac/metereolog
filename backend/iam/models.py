@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.utils.translation import gettext_lazy as _
+from uuid import uuid4
 
 
 class Permission(models.Model):
@@ -24,6 +25,7 @@ class Permission(models.Model):
 
 class Organization(models.Model):
     name = models.CharField(max_length=64)
+    identifier = models.UUIDField(default=uuid4, unique=True)
     is_active = models.BooleanField(default=True)
 
     @property
@@ -31,7 +33,7 @@ class Organization(models.Model):
         return self.user_set.all()
 
     def __str__(self):
-        return f"{self.name} <{self.id}>"
+        return f"{self.name} <{self.identifier}>"
 
 
 class Role(models.Model):
