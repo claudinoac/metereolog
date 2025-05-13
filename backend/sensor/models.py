@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.postgres.fields import HStoreField
 from uuid import uuid4
 from device.models import Device
+from timescale.db.models.managers import TimescaleManager
+
 
 
 class Sensor(models.Model):
@@ -25,10 +27,14 @@ class Sensor(models.Model):
 
 
 class SensorReading(models.Model):
-    timestamp = models.DateTimeField(primary_key=True)
+    pk = models.CompositePrimaryKey("sensor_uid", "timestamp")
+    timestamp = models.DateTimeField()
     sensor_uid = models.UUIDField()
     value = models.CharField(max_length=64)
 
+    objects = TimescaleManager()
     class Meta:
         db_table = 'sensor_reading'
-        unique_together = (('timestamp', 'sensor_uid'),)
+
+    def __str__(self):
+        return f"{self.sensor_uid}: {self.value} <{self.timestamp.strftime('%d-%m-%Y %H:%M:%S')}>"

@@ -13,6 +13,7 @@ class SensorReadingHandler:
         pass
 
     def handle_readings(self, org_uid, device_uid, payload):
+        logger.info(payload)
         if not Device.objects.filter(
             identifier=device_uid, is_active=True,
             organization__identifier=org_uid, organization__is_active=True
@@ -25,9 +26,9 @@ class SensorReadingHandler:
             return
 
         for sensor_uid, sensor_data in payload.items():
-            if not Sensor.objects.filter(identifier=sensor_uid):
+            if not Sensor.objects.filter(identifier=sensor_uid).exists():
                 logger.error(f"Sensor with uid {sensor_uid} not found or is not active")
-                return
+                continue
 
             try:
                 timestamp = datetime.utcfromtimestamp(sensor_data.get("timestamp"))
@@ -35,6 +36,6 @@ class SensorReadingHandler:
                 logger.warning(f"Sensor {sensor_uid} returned invalid timestamp")
             else:
                 if sensor_value := sensor_data.get("value"):
-                    return SensorReading.objects.create(timestamp=timestamp, value=sensor_value, sensor_uid=sensor_uid)
+                    SensorReading.objects.create(timestamp=timestamp, value=sensor_value, sensor_uid=sensor_uid)
                 else:
                     logger.warning(f"Sensor {sensor_uid} returned no valid value.")

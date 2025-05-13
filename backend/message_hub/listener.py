@@ -5,6 +5,7 @@ import socket
 from json import loads as json_loads, dumps as json_dumps, JSONDecodeError
 from sensor.handlers import SensorReadingHandler
 from pprint import PrettyPrinter
+from django.db import connection
 
 
 logger = logging.getLogger(__name__)

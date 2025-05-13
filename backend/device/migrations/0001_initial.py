@@ -10,7 +10,6 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('sensor', '0003_create_sensor_reading_hp'),
         ('iam', '0005_organization_identifier'),
     ]
 

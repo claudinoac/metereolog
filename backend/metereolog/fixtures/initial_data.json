@@ -40,14 +40,6 @@
     }
 },
 {
-    "model": "sensor.sensorreading",
-    "pk": "2025-05-02T07:56:07Z",
-    "fields": {
-        "sensor_uid": "8a325e7c-8b0b-4ba1-93d8-32c1d21041ee",
-        "value": "10"
-    }
-},
-{
     "model": "device.device",
     "pk": 1,
     "fields": {
