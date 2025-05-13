@@ -3,7 +3,9 @@ from django.conf import settings
 import logging
 import socket
 from json import loads as json_loads, dumps as json_dumps, JSONDecodeError
+from sensor.handlers import SensorReadingHandler
 from pprint import PrettyPrinter
+from django.db import connection
 
 
 logger = logging.getLogger(__name__)
@@ -16,6 +18,7 @@ class MessageHubListener:
 
     def __init__(self):
         self.queue = Queue('sensors', Exchange('mqtt.*.*', type='topic'), routing_key="mqtt.*.*")
+        self.reading_handler = SensorReadingHandler()
 
     def run(self):
         logger.info("Starting message hub listener..")
@@ -26,8 +29,8 @@ class MessageHubListener:
         while(True):
             try:
                 self.consume()
-            except ConnectionResetError:
-                pass
+            except ConnectionResetError as exception:
+                logger.exception(f"Connection Reset while trying to consume queue: {exception}")
 
     def reconnect(self):
         revived_connection = self.connection.clone()
@@ -44,16 +47,15 @@ class MessageHubListener:
                 self.connection.drain_events(timeout=1)
             except socket.timeout:
                 self.connection.heartbeat_check()
-            except Exception as exc:
-                pass
+            except Exception as exception:
+                logger.exception(f"Error while trying to consume queue: {exception}")
 
     def handle_message(self, body, message):
         try:
             routing_key = message.delivery_info["routing_key"]
-            _, user, device = routing_key.split(".")
+            _, org_uid, device_uid = routing_key.split(".")
             payload = json_loads(body)
-            payload_display = json_dumps(payload, indent=4)
-            logger.info(f"Payload received from device {device} using user {user}: {payload_display}")
+            self.reading_handler.handle_readings(org_uid, device_uid, payload)
         except JSONDecodeError:
             logger.error("Invalid message: {body}")
         message.ack()

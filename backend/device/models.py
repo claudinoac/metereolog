@@ -1,0 +1,16 @@
+from django.db import models
+from uuid import uuid4
+
+from iam.models import Organization
+
+
+class Device(models.Model):
+    name = models.CharField(max_length=255)
+    identifier = models.UUIDField(default=uuid4, unique=True)
+    organization = models.ForeignKey(to=Organization, on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=True)
+    mqtt_user = models.CharField(max_length=64)
+    mqtt_password = models.CharField(max_length=64)
+
+    def __str__(self):
+        return f"{self.name} <{self.organization.identifier.hex}.{self.identifier.hex}>"

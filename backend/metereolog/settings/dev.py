@@ -13,7 +13,7 @@ ALLOWED_HOSTS = []
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'timescale.db.backends.postgresql',
         'NAME': 'metereolog',
         'USER': 'metereolog',
         'PASSWORD': 'metereolog',

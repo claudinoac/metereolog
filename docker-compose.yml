@@ -15,7 +15,7 @@ services:
       - metereolog
     user: "999"
   postgres:
-    image: postgres:17-bullseye
+    image: timescale/timescaledb-ha:pg17
     container_name: met-postgres
     shm_size: 128mb
     environment:
@@ -54,6 +54,34 @@ services:
     depends_on:
       - postgres
       - rabbitmq
+  nginx:
+    image: nginx
+    container_name: metereolog
+    ports:
+      - 8008:8008
+    volumes:
+      - ./frontend/nginx:/etc/nginx/conf.d
+    networks:
+      - metereolog
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - ui
+      - api
+  ui:
+    container_name: met-ui
+    build:
+      context: ./frontend
+      dockerfile: metereolog-ui.dockerfile
+    networks:
+      - metereolog
+    volumes:
+      - ./frontend:/code
+      - /code/node_modules
+    ports:
+      - 8010
+    stdin_open: true
+    tty: true
 networks:
   metereolog:
     external:

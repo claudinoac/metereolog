@@ -21,7 +21,9 @@ INSTALLED_APPS = [
     "message_hub",
     "iam",
     "sensor",
+    "device",
     "django_extensions",
+    "rest_framework",
 ]
 
 MIDDLEWARE = [
@@ -75,9 +77,22 @@ LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8008',
+]
 
 
 STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "iam.User"
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+}
