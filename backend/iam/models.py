@@ -19,7 +19,7 @@ class Permission(models.Model):
     operation = models.CharField(max_length=32, choices=OperationTypes.choices)
 
     def __str__(self):
-        return f"{self.name} -- {self.resource_type}::{self.operation} <{self.id}>"
+        return f"{self.name} -- {self.resource_type}::{self.operation} ({self.id})"
 
 
 class Organization(models.Model):
@@ -31,7 +31,7 @@ class Organization(models.Model):
         return self.user_set.all()
 
     def __str__(self):
-        return f"{self.name} <{self.id}>"
+        return f"{self.name} ({self.id})"
 
 
 class Role(models.Model):
