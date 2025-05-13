@@ -41,7 +41,7 @@ class Role(models.Model):
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.name} - Org: {self.organization.name} ({self.id})"
+        return f"{self.name} - Org: {self.organization.name} <{self.id}>"
 
 
 class UserManager(BaseUserManager):
@@ -82,7 +82,6 @@ class User(AbstractBaseUser):
         if self.organization:
             return f"{self.name} - Org: {self.organization.name} <self.email>"
         return f"{self.name} - NO ORG <self.email>"
-
 
     def has_perm(self, perm, obj=None):
         return self.is_admin
