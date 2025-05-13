@@ -18,6 +18,9 @@ class Permission(models.Model):
     resource_type = models.CharField(max_length=64)
     operation = models.CharField(max_length=32, choices=OperationTypes.choices)
 
+    def __str__(self):
+        return f"{self.name} -- {self.resource_type}::{self.operation} <{self.id}>"
+
 
 class Organization(models.Model):
     name = models.CharField(max_length=64)
@@ -26,6 +29,19 @@ class Organization(models.Model):
     @property
     def users(self):
         return self.user_set.all()
+
+    def __str__(self):
+        return f"{self.name} <{self.id}>"
+
+
+class Role(models.Model):
+    name = models.CharField(max_length=64)
+    organization = models.ForeignKey(to=Organization, on_delete=models.CASCADE)
+    permissions = models.ManyToManyField(to=Permission)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.name} - Org: {self.organization.name} <{self.id}>"
 
 
 class UserManager(BaseUserManager):
@@ -55,6 +71,7 @@ class User(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     ts_created = models.DateTimeField(auto_now_add=True)
     organization = models.ForeignKey(to=Organization, on_delete=models.CASCADE, null=True)
+    roles = models.ManyToManyField(to=Role)
 
     objects = UserManager()
 
@@ -62,7 +79,9 @@ class User(AbstractBaseUser):
     REQUIRED_FIELDS = ['first_name', 'last_name']
 
     def __str__(self):
-        return f"{self.name} <self.email>"
+        if self.organization:
+            return f"{self.name} - Org: {self.organization.name} <self.email>"
+        return f"{self.name} - NO ORG <self.email>"
 
     def has_perm(self, perm, obj=None):
         return self.is_admin
