@@ -1,42 +1,58 @@
 [{
-    "model": "iam.organization",
-    "pk": 1,
-    "fields": {
-        "name": "UFSC",
-        "identifier": "e7320819-fa05-4169-afe0-84caf3f5eb78",
-        "is_active": true
-    }
-},
-{
-    "model": "iam.user",
-    "pk": 1,
-    "fields": {
-        "password": "pbkdf2_sha256$600000$viP06i3p4KBn4VzvfCmdKb$BNZILjJjvBeswZzpqqKvC2v2Yv1wFo0c6q1neG1ErCI=",
-        "last_login": "2025-05-02T07:52:54.901Z",
-        "email": "itsalissom@gmail.com",
-        "first_name": "Alisson",
-        "last_name": "Claudino",
-        "is_admin": true,
-        "is_active": true,
-        "ts_created": "2025-05-02T07:46:14.959Z",
-        "organization": null,
-        "roles": []
-    }
-},
-{
     "model": "sensor.sensor",
     "pk": 1,
     "fields": {
         "name": "DHT-11 (humidity)",
         "device": 1,
         "unit": "%",
-        "identifier": "8a325e7c-8b0b-4ba1-93d8-32c1d21041ee",
+        "identifier": "a1cb7516-c98e-4339-ab13-6f358aa7e38f",
         "measuring_type": "float",
         "description": "Humidity Sensor, measures Relative Humidity",
         "is_active": true,
         "additional_info": "{}",
         "upper_limit": 100.0,
         "lower_limit": 0.0
+    }
+},
+{
+    "model": "sensor.sensor",
+    "pk": 2,
+    "fields": {
+        "name": "DHT-11 (Temperature)",
+        "device": 1,
+        "unit": "ºC",
+        "identifier": "47f4bc3a-a817-49e9-af06-a408a5ee602d",
+        "measuring_type": "float",
+        "description": "Temperature",
+        "is_active": true,
+        "additional_info": "{}",
+        "upper_limit": 100.0,
+        "lower_limit": 0.0
+    }
+},
+{
+    "model": "sensor.sensor",
+    "pk": 3,
+    "fields": {
+        "name": "Wind Direction",
+        "device": 1,
+        "unit": "-",
+        "identifier": "4f531ada-394e-46a4-98f6-38d8bd45a3a3",
+        "measuring_type": "str",
+        "description": "Direction",
+        "is_active": true,
+        "additional_info": "{}",
+        "upper_limit": 0.0,
+        "lower_limit": 0.0
+    }
+},
+{
+    "model": "iam.organization",
+    "pk": 1,
+    "fields": {
+        "name": "UFSC",
+        "identifier": "e7320819-fa05-4169-afe0-84caf3f5eb78",
+        "is_active": true
     }
 },
 {
@@ -50,5 +66,4 @@
         "mqtt_user": "metereolog",
         "mqtt_password": "metereolog"
     }
-}
-]
+}]
