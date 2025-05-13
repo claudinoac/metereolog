@@ -23,6 +23,7 @@ MQTT::MQTT(
 ) {
     this->wifi_client = wifi_client;
     this->client = new PubSubClient(*this->wifi_client->getClient());
+    this->client->setBufferSize(MQTT_MAX_PACKET_SIZE);
     this->username = strdup(username);
     this->password = strdup(password);
     this->broker_addr = strdup(broker_addr);
@@ -38,7 +39,7 @@ MQTT::MQTT(
 };
 
 void MQTT::handle_incoming_message(char* topic, byte* payload, unsigned int length) {
-    Serial.print("Message arrived [");
+    Serial.print("\n\nMessage arrived [");
     Serial.print(topic);
     Serial.print("] ");
     for (int i = 0; i < length; i++) {
@@ -73,7 +74,10 @@ void MQTT::publish(char *topic, JsonDocument &message) {
         this->connect(topic);
     }
     this->client->loop();
-    char msg_buffer[MSG_BUFFER_SIZE];
-    serializeJson(message, msg_buffer);
-    this->client->publish(topic, msg_buffer, MSG_BUFFER_SIZE);
+    serializeJson(message, this->msg_buffer);
+    Serial.print("\n\n Sending ");
+    Serial.print(strlen(this->msg_buffer));
+    Serial.print(" bytes\n\n");
+    this->client->publish(topic, this->msg_buffer, strlen(this->msg_buffer));
+    // this->client->subscribe(topic);
 }

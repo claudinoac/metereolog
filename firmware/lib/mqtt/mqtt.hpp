@@ -24,12 +24,13 @@
 #include "wifi.hpp"
 
 
-#define MSG_BUFFER_SIZE  256
+#define MSG_BUFFER_SIZE  512
+#define MQTT_MAX_PACKET_SIZE 512
 
 class MQTT {
     PubSubClient *client;
     Wifi *wifi_client;
-    char msg[MSG_BUFFER_SIZE];
+    char msg_buffer[MSG_BUFFER_SIZE];
     char *username;
     char *password;
     char *broker_addr;
