@@ -28,3 +28,5 @@ The project is composed of three main components:
 ## Architecture Overview
 ![Architecture](https://github.com/claudinoac/metereolog/blob/main/docs/architecture.png?raw=true)
 
+## Database Schema
+![Database Schema](https://github.com/claudinoac/metereolog/blob/main/docs/database_schema.png?raw=true)
