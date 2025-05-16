@@ -26,7 +26,7 @@ The project is composed of three main components:
 * 🧪 Easily extendable for new sensors or data endpoints
 
 ## Architecture Overview
-![Architecture](docs/architecture.jpg)
+![Architecture](docs/architecture.png)
 
 ## Database Schema
 ![Database Schema](docs/database_schema.jpg)
