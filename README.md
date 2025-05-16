@@ -26,7 +26,7 @@ The project is composed of three main components:
 * 🧪 Easily extendable for new sensors or data endpoints
 
 ## Architecture Overview
-![Architecture](https://github.com/claudinoac/metereolog/blob/main/docs/architecture.png?raw=true)
+![Architecture](docs/architecture.jpg)
 
 ## Database Schema
-![Database Schema](https://github.com/claudinoac/metereolog/blob/main/docs/database_schema.png?raw=true)
+![Database Schema](docs/database_schema.jpg)
