@@ -42,6 +42,9 @@ export default defineConfig((ctx) => {
         browser: [ 'es2022', 'firefox115', 'chrome115', 'safari14' ],
         node: 'node20'
       },
+      alias: {
+        '@': '/src',
+      },
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
       // vueRouterBase,
@@ -108,7 +111,12 @@ export default defineConfig((ctx) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: []
+      plugins: [
+          'Dialog',
+          'Loading',
+          'Notify',
+          'Cookies',
+      ],
     },
 
     // animations: 'all', // --- includes all animations

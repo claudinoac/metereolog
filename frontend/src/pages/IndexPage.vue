@@ -129,7 +129,7 @@ export default defineComponent({
       that.isLoaded = true;
     };
     load();
-    setInterval(load, 10000);
+    that.interval_runner = setInterval(load, 10000);
   },
   computed: {
     interval() {
@@ -145,6 +145,7 @@ export default defineComponent({
       },
       windDir: '4f531ada-394e-46a4-98f6-38d8bd45a3a3',
       isLoaded: false,
+      interval_runner: null,
       tempChartOptions: {
         ...baseChartOptions,
       },
@@ -210,6 +211,9 @@ export default defineComponent({
         }],
       },
     };
+  },
+  beforeUnmount() {
+    clearInterval(this.interval_runner);
   },
 });
 </script>

@@ -10,14 +10,14 @@
           aria-label="Menu"
           @click="toggleSidebar"
         />
-
+        <q-img width="30px" src="~assets/logo-metereolog-white.png"/>
         <q-toolbar-title>
           Metereolog
         </q-toolbar-title>
         <q-space/>
-        <q-btn-dropdown stretch flat no-caps icon="mdi-account" label="Alisson Claudino">
-          <q-list clickable v-ripple>
-            <q-item>
+        <q-btn-dropdown stretch flat no-caps icon="mdi-account" :label="userData.name">
+          <q-list>
+            <q-item clickable v-ripple @click="logout">
               <q-item-section>
                 <div class="flex row items-center">
                   <q-icon name="mdi-logout" size="24px" class="q-pr-sm"/>
@@ -25,7 +25,7 @@
                 </div>
               </q-item-section>
             </q-item>
-            <q-item>
+            <q-item clickable v-ripple>
               <q-item-section>
                 <div class="flex row items-center">
                   <q-icon name="mdi-account-details" size="24px" class="q-pr-sm"/>
@@ -72,14 +72,16 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent } from 'vue';
+import { mapState } from 'pinia';
+import { useStore } from 'src/stores/store';
 
 const menuList = [
   {
     icon: 'home',
     label: 'Home',
     separator: true,
-    to: '/',
+    to: { name: 'home' },
   },
   {
     icon: 'mdi-account-multiple',
@@ -115,7 +117,8 @@ const menuList = [
   {
     icon: 'mdi-domain',
     label: 'Organizations',
-    separator: false
+    separator: false,
+    admin: true,
   },
 ];
 
@@ -123,18 +126,32 @@ export default defineComponent({
   name: 'MainLayout',
   data () {
     return {
-      menuList,
+      menuList: [],
       sidebarOpen: false,
     }
+  },
+  created() {
+    menuList.forEach((item) => {
+      if (!item.admin || this.userData.is_admin) {
+        this.menuList.push(item);
+      }
+    });
   },
   computed: {
       currentPath() {
           return window.location.pathname;
       },
+    ...mapState(useStore, { userData: 'getUserData' }),
   },
   methods: {
     toggleSidebar () {
       this.sidebarOpen = !this.sidebarOpen
+    },
+    async logout() {
+      const response = await this.$api.post('iam/logout');
+      if (response.status === 204) {
+        this.$router.push({ name: 'login'});
+      }
     },
   },
 });
