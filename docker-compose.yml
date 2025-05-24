@@ -32,7 +32,7 @@ services:
       dockerfile: "metereolog.dockerfile"
     image: metereolog-server 
     pull_policy: never
-    command: "python manage.py runserver 0.0.0.0:8009"
+    command: "python manage.py runserver_plus 0.0.0.0:8009"
     volumes:
       - ./backend:/code
     ports: 
@@ -84,5 +84,5 @@ services:
     tty: true
 networks:
   metereolog:
-    external:
-      name: metereolog
+    name: metereolog
+    external: true

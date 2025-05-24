@@ -1,29 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import serializers
 from django.shortcuts import Http404
 from sensor.models import Sensor, SensorReading
 from django.utils import timezone
 from datetime import timedelta
-from django.db.models import Count, Avg, FloatField
+from django.db.models import Avg, FloatField
 from django.db.models.functions import Cast
-
-
-class SensorReadingSerializer(serializers.ModelSerializer):
-    timestamp = serializers.SerializerMethodField(read_only=True)
-
-    class Meta:
-        model = SensorReading
-        fields = [
-            "timestamp",
-            "value"
-        ]
-
-    def get_timestamp(self, instance):
-        if isinstance(instance, dict):
-            return instance["bucket"]
-        return instance.timestamp
+from sensor.api.serializers import SensorReadingSerializer
 
 
 class SensorChartView(APIView):

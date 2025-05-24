@@ -20,9 +20,9 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path(
         "api/", include([
-            path("iam", include(("iam.api.urls", "iam"), namespace="iam")),
-            path("sensor", include(("sensor.api.urls", "sensor"), namespace="sensor")),
-            path("device", include(("device.api.urls", "device"), namespace="device")),
+            path("iam/", include(("iam.api.urls", "iam"), namespace="iam")),
+            path("sensor/", include(("sensor.api.urls", "sensor"), namespace="sensor")),
+            path("device/", include(("device.api.urls", "device"), namespace="device")),
         ])
     )
 ]

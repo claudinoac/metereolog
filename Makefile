@@ -24,6 +24,8 @@ init:  ### Install dependencies and start applications
 	 " -> Fedora: https://docs.docker.com/install/linux/docker-ce/fedora/ "; exit 1;)
 	@ -docker network create metereolog
 	@ docker-compose up -d
+	@ echo -n 'Waiting for postgres to be ready...'
+	@ while true; do echo -n '.'; docker compose exec postgres pg_isready >> /dev/null && break; done
 	@ make migrations
 	@ make migrate
 	@ $(EXEC) python manage.py loaddata metereolog/fixtures/initial_data.json
@@ -50,7 +52,7 @@ bash: run-detached  ### Opens the application shell
 	@ $(EXEC) bash
 
 .PHONY: run-detached
-run-detached:
+run-detached:  ### Runs all containers (backend and frontend)
 	@ docker compose up -d --no-recreate
 
 .PHONY: build

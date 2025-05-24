@@ -32,10 +32,10 @@ DHTInfo dht_reading;
 MQTT *mqtt_client;
 Wifi *wifi_client;
 
-char* ssid = "tbd";
-char* password = "tbd";
-char *broker_addr = "tbd";
-int broker_port = 1883;
+char* ssid = "Alisson";
+char* password = "err0r404";
+char *broker_addr = "2.tcp.ngrok.io";
+int broker_port = 16768;
 char *broker_user = "metereolog";
 char *broker_password = "metereolog";
 char *client_id = "esp32_met_cit";

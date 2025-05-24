@@ -22,6 +22,7 @@ Wifi::Wifi(char *ssid, char* password) {
     this->password = strdup(password);
     this->client = new WiFiClient();
     WiFi.begin(this->ssid, this->password);
+    WiFi.mode(WIFI_STA);
     Serial.print("Connecting to wifi...");
     while(WiFi.status() != WL_CONNECTED) {
         delay(500);

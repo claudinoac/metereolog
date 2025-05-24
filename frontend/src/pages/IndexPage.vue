@@ -1,9 +1,20 @@
 <template>
-  <q-page class="flex flex-center">
-    <div style="width: 800px; height: 600px">
-      <LineChart :data="tempChart" :options="tempChartOptions" v-if="isLoaded"/>
-      <LineChart :data="humChart" :options="humChartOptions" v-if="isLoaded"/>
-      <RadarChart :data="windDirChart" :options="windDirChartOptions" v-if="isLoaded"/>
+  <q-page class="dashboard-view flex flex-center column">
+    <div class="subheader full-width">
+      <div class="q-pl-md">
+        <h4>Device: {{ device?.name }}</h4>
+      </div>
+    </div>
+    <div class="charts">
+      <div class="line-chart">
+        <LineChart :data="tempChart" :options="tempChartOptions" v-if="isLoaded"/>
+      </div>
+      <div class="line-chart">
+        <LineChart :data="humChart" :options="humChartOptions" v-if="isLoaded"/>
+      </div>
+      <div class="rose-chart">
+        <RadarChart :data="windDirChart" :options="windDirChartOptions" v-if="isLoaded"/>
+      </div>
     </div>
   </q-page>
 </template>
@@ -67,6 +78,10 @@ export default defineComponent({
   },
   async created() {
     const that = this;
+    const response = await this.$api.get(`/device/6d2673ca-0408-4556-8605-c9a738a8bae3`);
+    if (response.status === 200) {
+      this.device = response.data;
+    }
     async function load() {
       await Promise.allSettled(Object.entries(that.sensors).map(async ([name, uuid]) => {
         const response = await that.$api.get(
@@ -123,6 +138,7 @@ export default defineComponent({
   },
   data() {
     return {
+      device: {},
       sensors: {
         temp: '47f4bc3a-a817-49e9-af06-a408a5ee602d',
         hum: 'a1cb7516-c98e-4339-ab13-6f358aa7e38f',
@@ -197,3 +213,26 @@ export default defineComponent({
   },
 });
 </script>
+<style lang="scss">
+.dashboard-view {
+    background-color: $grey-2;
+
+  .charts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      width: 100%;
+      padding: 0 20px;
+      gap: 20px;
+
+      .line-chart,.rose-chart{
+        background-color: white;
+        width: 100%;
+        height: 600px;
+        align-items: center;
+        justify-items: center;
+        padding: 20px;
+        border-radius: 6px;
+      }
+  }
+}
+</style>

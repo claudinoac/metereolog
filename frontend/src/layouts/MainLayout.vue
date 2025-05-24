@@ -53,7 +53,7 @@
             <q-item clickable v-ripple :to="menuItem.to" linkActiveClass="link-active">
               <q-item-section>
                 <div class="flex row">
-                  <q-icon :name="menuItem.icon" size="24px" class="text-purple-7 q-pr-sm"/>
+                  <q-icon :name="menuItem.icon" size="24px" class="text-orage-7 q-pr-sm"/>
                   {{ menuItem.label }}
                 </div>
               </q-item-section>
@@ -85,7 +85,7 @@ const menuList = [
     icon: 'mdi-account-multiple',
     label: 'Users',
     separator: false,
-    color: 'purple',
+    color: 'primary',
   },
   {
     icon: 'mdi-account-lock',
@@ -141,7 +141,7 @@ export default defineComponent({
 </script>
 <style lang="scss">
 .link-active {
-  color: $purple-8;
+  color: $primary;
   font-weight: 700 !important;
 }
 </style>
