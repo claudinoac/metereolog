@@ -107,6 +107,7 @@ const menuList = [
   {
     icon: 'mdi-memory',
     label: 'Devices',
+    to: { name: 'list-devices' },
     separator: false
   },
   {

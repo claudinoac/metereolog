@@ -22,7 +22,7 @@ urlpatterns = [
         "api/", include([
             path("iam/", include(("iam.api.urls", "iam"), namespace="iam")),
             path("sensor/", include(("sensor.api.urls", "sensor"), namespace="sensor")),
-            path("device/", include(("device.api.urls", "device"), namespace="device")),
+            path("device", include(("device.api.urls", "device"), namespace="device")),
         ])
     )
 ]

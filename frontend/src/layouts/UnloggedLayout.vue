@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout class="unlogged-layout" view="lHh Lpr lFf">
     <q-page-container>
         <q-img
             rel="preload" as="image"
@@ -10,3 +10,11 @@
     </q-page-container>
   </q-layout>
 </template>
+<style lang="scss">
+.unlogged-layout {
+  .q-page {
+    background: initial;
+    padding: 0;
+  }
+}
+</style>

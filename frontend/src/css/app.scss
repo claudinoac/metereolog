@@ -1,1 +1,27 @@
 // app global css in SCSS form
+.q-page {
+  padding: 20px 40px;
+  background-color: $background;
+
+  .subheader {
+    display: flex;
+    flex-flow: column;
+    padding: 40px 0px;
+    border-bottom: 1px solid $grey-5;
+
+    &--title {
+      display: flex;
+      flex-flow: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    > .q-input {
+      display: flex;
+      align-self: end;
+      width: 200px;
+      margin-top: 20px;
+      background-color: white;
+    }
+  }
+}

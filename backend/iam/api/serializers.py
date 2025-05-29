@@ -18,7 +18,7 @@ class LoginSerializer(serializers.Serializer):
 
 
 class UserInfoSerializer(serializers.ModelSerializer):
-    organization = serializers.SlugRelatedField(slug_field="name", read_only=True)
+    organization = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
@@ -27,3 +27,10 @@ class UserInfoSerializer(serializers.ModelSerializer):
             "is_admin",
             "organization",
         ]
+
+    def get_organization(self, instance):
+        organization = instance.organization
+        return {
+            "name": organization.name,
+            "id": organization.identifier,
+        }

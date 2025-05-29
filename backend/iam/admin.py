@@ -27,12 +27,15 @@ class UserAdmin(UserAdmin):
     filter_horizontal = ()
     fieldsets = (
         (None, {"fields": ("first_name", "last_name", "email", "password")}),
-        ("Permissions", {"fields": ("is_admin", "is_active", "roles")}),
+        ("Permissions", {"fields": ("is_admin", "is_active", "organization")}),
     )
     add_fieldsets = ((
         None, {
             "classes": ("wide",),
-            "fields": ("first_name", "last_name", "email", "password1", "password2", "is_admin", "is_active", "roles")
+            "fields": (
+                "first_name", "last_name", "email", "password1", "password2",
+                "is_admin", "is_active", "roles", "organization"
+            )
         }
     ))
     search_fields = ("email", "first_name", "last_name")

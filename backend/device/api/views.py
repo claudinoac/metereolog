@@ -1,34 +1,31 @@
 from rest_framework.viewsets import ViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status, serializers
+from rest_framework import status
 from device.models import Device
+from metereolog.base_views import BaseListView
+from device.api.serializers import (
+    DeviceSerializer, DeviceReadSerializer
+)
 
 
-class DeviceSerializer(serializers.ModelSerializer):
-    organization = serializers.SerializerMethodField(read_only=True)
-
-    class Meta:
-        model = Device
-        fields = [
-            "name",
-            "identifier",
-            "organization",
-            "is_active",
-            "mqtt_user",
-            "mqtt_password",
-        ]
-
-    def get_organization(self, instance):
-        return instance.organization.name
+class DeviceListView(BaseListView):
+    serializer_class = DeviceSerializer
+    model_class = Device
+    filterable_params = ["name", "identifier", "organization__name"]
 
 
 class DeviceViewSet(ViewSet):
     permission_classes = [IsAuthenticated]
-    serializer_class = DeviceSerializer
+    serializer_class = DeviceReadSerializer
 
     def retrieve(self, request, device_uid):
         if device := Device.objects.filter(identifier=device_uid).first():
             serializer = self.serializer_class(instance=device)
             return Response(data=serializer.data)
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, device_uid):
+        if device := Device.objects.filter(identifier=device_uid).first():
+            device.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

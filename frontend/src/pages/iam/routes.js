@@ -1,4 +1,5 @@
-export default [
+
+const unLoggedRoutes = [
     {
         path: '/auth',
         name: 'auth',
@@ -13,3 +14,10 @@ export default [
         ],
     },
 ];
+
+const loggedRoutes = [];
+
+export {
+  unLoggedRoutes,
+  loggedRoutes,
+};

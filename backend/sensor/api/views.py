@@ -8,6 +8,8 @@ from datetime import timedelta
 from django.db.models import Avg, FloatField
 from django.db.models.functions import Cast
 from sensor.api.serializers import SensorReadingSerializer
+from metereolog.base_views import BaseListView
+from rest_framework import serializers
 
 
 class SensorChartView(APIView):
@@ -30,3 +32,28 @@ class SensorChartView(APIView):
         return Response(
             data=serializer.data
         )
+
+
+class SensorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sensor
+        fields = [
+            "name",
+            "unit",
+            "identifier",
+            "measuring_type",
+            "description",
+            "is_active",
+            "additional_info",
+            "upper_limit",
+            "lower_limit",
+        ]
+
+
+class SensorListView(BaseListView):
+    serializer_class = SensorSerializer
+    model_class = Sensor
+    filterable_params = ["name", "identifier", "description", "additional_info", "unit"]
+
+    def get_base_queryset(self):
+        return self.model_class.objects.filter(device__identifier=self.kwargs.get("device_uid"))
