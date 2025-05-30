@@ -13,17 +13,18 @@ typedef struct {
 
 class MQ6Sensor {
     public:
-        MQ6Sensor(adc1_channel_t channel, float maxVoltage = 5.0f, int maxAdc = 4095);
+        MQ6Sensor();
         MQ6Info read();
-        float calibrate(float RL = 4700.0f);
-        float readPPM(float Ro, float RL = 4700.0f);
+        float read_ppm();
 
     private:
-        adc1_channel_t adc_channel;
-        float reference_voltage;
-        int adc_resolution;
-
-        float calculateRs(float voltage, float RL);
+        float Ro = 0.0f;
+        float RL = 4700.0f;
+        float reference_voltage = 3.9f;
+        int adc_resolution = 4095;
+        adc_channel_t adc_channel = ADC1_CHANNEL_6;
+        float calibrate();
+        float calculateRs(float voltage);
 };
 
 #endif

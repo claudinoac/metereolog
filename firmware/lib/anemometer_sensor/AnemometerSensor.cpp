@@ -14,6 +14,7 @@ AnemometerSensor::AnemometerSensor(gpio_num_t pin)
     : pin(pin), pulseCount(0), ts_read(0) {
     anemometer = this; // Turn this class into a singleton
     
+    pinMode(pin, INPUT_PULLUP);
     gpio_pad_select_gpio(pin);
     gpio_set_direction(pin, GPIO_MODE_INPUT);
     gpio_set_pull_mode(pin, GPIO_PULLUP_ONLY);
