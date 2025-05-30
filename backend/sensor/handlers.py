@@ -35,7 +35,8 @@ class SensorReadingHandler:
             except Exception:
                 logger.warning(f"Sensor {sensor_uid} returned invalid timestamp")
             else:
-                if sensor_value := sensor_data.get("value"):
+                sensor_value = sensor_data.get("value")
+                if sensor_value is not None:
                     SensorReading.objects.create(timestamp=timestamp, value=sensor_value, sensor_uid=sensor_uid)
                 else:
                     logger.warning(f"Sensor {sensor_uid} returned no valid value.")
