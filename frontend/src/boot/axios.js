@@ -36,8 +36,9 @@ api.interceptors.response.use(
             let responseData = error.response.data;
             let messages = [];
             const singleMessage = responseData?.detail || responseData?.error;
-            if (singleMessage) messages.push(singleMessage);
-            if (messages.length === 0 && error.response.status === 404) {
+            if (singleMessage) {
+              messages.push(singleMessage)
+            } else if (messages.length === 0 && error.response.status === 404) {
                 messages = ['Requested resource not found'];
             } else if (typeof responseData === 'object' && Object.keys(responseData).length > 0) {
                 if (responseData['non_field_errors']) {

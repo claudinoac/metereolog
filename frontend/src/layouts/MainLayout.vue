@@ -111,11 +111,6 @@ const menuList = [
     separator: false
   },
   {
-    icon: 'mdi-leak',
-    label: 'Sensors',
-    separator: true
-  },
-  {
     icon: 'mdi-domain',
     label: 'Organizations',
     separator: false,

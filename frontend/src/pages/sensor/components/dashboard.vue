@@ -1,12 +1,20 @@
 <template>
   <div class="sensors-dashboard">
     <div class="flex row items-center justify-between">
-      <span class="text-h5">Sensors</span>
+      <span class="text-h5">Sensors Dashboard</span>
       <q-btn label="New Sensor" no-caps color="primary" @click="newSensor"/>
+    </div>
+    <div class="column">
+      <b class="q-mb-sm q-mt-md">Date Range:</b>
+      <q-form class="row" @submit.prevent="updateTimeRange">
+        <DateTimePicker class="time-picker q-mr-md" label="From" v-model="timeRangeSelection.start"/>
+        <DateTimePicker class="time-picker" label="To" v-model="timeRangeSelection.end"/>
+        <q-btn label="Apply Time Range" color="primary" class="q-ml-md" type="submit"/>
+      </q-form>
     </div>
     <div class="charts">
       <template v-for="sensor in sensors" :key="sensor.identifier">
-        <SensorCard :sensorData="sensor"/>
+        <SensorCard :sensorData="sensor" :timeRange="timeRange"/>
       </template>
     </div>
   </div>
@@ -14,11 +22,14 @@
 <script>
 import { defineComponent } from 'vue';
 import SensorCard from '@/pages/sensor/components/sensor-card.vue';
+import DateTimePicker from '@/components/datetime-picker.vue';
+import { sub as subDate } from 'date-fns';
 
 export default defineComponent({
   name: 'sensors-dashboard',
   components: {
     SensorCard,
+    DateTimePicker,
   },
   props: {
     deviceId: {
@@ -31,23 +42,41 @@ export default defineComponent({
       isChartLoaded: false,
       chartData: [],
       sensors: [],
+      timeRange: {
+        start: null,
+        end: null,
+      },
+      timeRangeSelection: {
+        start: null,
+        end: null,
+      }
     };
   },
   async created() {
-      const response = await this.$api.get(`/device/${this.deviceId}/sensors`);
-      if (response.status === 200) {
-        this.sensors = response.data.results.map((item) => ({ ...item, chartLabel: `${item.description} (${item.unit})` }));
-      }
-  },
-  computed: {
-    interval() {
-      return this.$route?.query?.interval ?? 900;
-    },
+    const currentTime = new Date();
+    this.timeRange.end = this.$route.query?.end || currentTime.toISOString();
+    this.timeRange.start = this.$route.query?.start || subDate(currentTime, { minutes: 30 }).toISOString();
+    this.timeRangeSelection = { ...this.timeRange };
+    const response = await this.$api.get(`/device/${this.deviceId}/sensors`);
+    if (response.status === 200) {
+      this.sensors = response.data.results.map((item) => ({ ...item, chartLabel: `${item.description} (${item.unit})` }));
+    }
   },
   methods: {
     newSensor() {
       this.$router.push({ name: 'new-sensor', params: { deviceId: this.deviceId } });
     },
+    updateTimeRange() {
+      this.$router.push({ query: this.timeRangeSelection });
+    },
+  },
+  watch: {
+    '$route': {
+      deep: true,
+      handler() {
+        this.timeRange = { ...this.timeRangeSelection };
+      }
+    }
   },
 });
 </script>
@@ -63,6 +92,10 @@ export default defineComponent({
     grid-auto-rows: 600px;
     gap: 40px;
 
+  }
+
+  .time-picker {
+    max-width: 300px;
   }
 }
 </style>

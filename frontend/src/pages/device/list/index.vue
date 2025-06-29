@@ -17,7 +17,6 @@
       :columns="columns"
       :pagination="pagination"
       @request="getList"
-      @row-click="viewDevice"
     >
       <template v-slot:body-cell-is_active="props">
         <q-td :props="props">
@@ -27,6 +26,10 @@
       </template>
       <template v-slot:body-cell-actions="props">
         <q-td :props="props">
+            <span class="q-mr-sm">
+              <q-icon @click="viewDevice(props.row)" class="detail-btn" name="mdi-leak" size="24px"/>
+              <q-tooltip>Sensors Dashboard</q-tooltip>
+            </span>
             <span class="q-mr-sm">
               <q-icon class="edit-btn" name="mdi-pencil-box" size="24px"/>
               <q-tooltip>Edit</q-tooltip>
@@ -98,7 +101,7 @@ export default defineComponent({
         });
       }
     },
-    viewDevice(evt, row) {
+    viewDevice(row) {
       this.$router.push({ name: 'view-device', params: { deviceId: row.identifier } });
     },
   },
@@ -109,20 +112,14 @@ export default defineComponent({
   .q-table__container {
     margin-top: 40px;
   }
-  .delete-btn {
-    color: black;
 
-    &:hover {
-      color: $negative;
-    }
-  }
-
-  .edit-btn {
+  .detail-btn {
     color: black;
 
     &:hover {
       color: $primary;
     }
   }
+
 }
 </style>

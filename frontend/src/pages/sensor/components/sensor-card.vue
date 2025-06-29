@@ -2,8 +2,11 @@
   <div class="sensor-card">
     <div class="flex row justify-between">
       <div class="sensor-info">
-        <span><b>Name:</b> {{ sensorData.name }}</span>
-        <span><b>ID:</b> {{ sensorData.identifier }}</span>
+        <span><b class="q-pr-sm">Name:</b>{{ sensorData.name }}</span>
+        <div class="flex row items-center">
+          <span><b class="q-pr-sm">ID:</b> {{ sensorData.identifier }}</span>
+          <q-icon class="q-pl-sm copy-icon" size="16px" name="mdi-content-copy" @click="copyClipboard(sensorData.identifier)"/>
+        </div>
       </div>
       <div class="sensor-actions">
         <q-icon class="edit-btn" name="mdi-pencil-box" size="24px"/>
@@ -56,9 +59,6 @@ export default defineComponent({
     };
   },
   computed: {
-    interval() {
-      return this.$route?.query?.interval ?? 900;
-    },
     chartLabel() {
       return `${this.sensorData.description} (${this.sensorData.unit})`;
     },
@@ -121,20 +121,39 @@ export default defineComponent({
         },
       };
     }
-    const response = await this.$api.get(
-      `/sensor/${this.sensorData.identifier}/chart`,
-      {
-        params: { interval_sec: this.interval },
-      },
-    );
-    if (response.status === 200) {
-      this.chartData = response.data.map((item) => ({x: item.timestamp, y: item.value}));
-      if (this.isDirectionChart) {
-        this.chartData = this.chartData.map((item) => ({...item, y: this.directionsLegend[item.y] }));
+    this.getChartData();
+  },
+  methods: {
+    async copyClipboard(text) {
+      await navigator.clipboard.writeText(text);
+      this.$q.notify({ message: 'Sensor ID copied to clipboard.', type: 'info' });
+    },
+    async getChartData() {
+      const response = await this.$api.get(
+        `/sensor/${this.sensorData.identifier}/chart`,
+        {
+          params: this.timeRange,
+        },
+      );
+      if (response.status === 200) {
+        this.chartData = response.data.map((item) => ({x: item.timestamp, y: item.value}));
+        if (this.isDirectionChart) {
+          this.chartData = this.chartData.map((item) => ({...item, y: this.directionsLegend[item.y] }));
+        }
+        this.isChartLoaded = true;
       }
-      this.isChartLoaded = true;
     }
   },
+  watch: {
+    timeRange: {
+      deep: true,
+      handler() {
+        if (this.timeRange.start && this.timeRange.end) {
+          this.getChartData();
+        }
+      },
+    },
+  }
 });
 </script>
 <style lang="scss">
@@ -149,5 +168,6 @@ export default defineComponent({
     display: flex;
     flex-flow: column;
   }
+
 }
 </style>

@@ -4,6 +4,10 @@ import DeviceRoutes from '@/pages/device/routes';
 const routes = [
   ...unLoggedRoutes,
   {
+    path: '',
+    redirect: '/home',
+  },
+  {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     name: 'root',

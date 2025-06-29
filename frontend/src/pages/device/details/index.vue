@@ -16,7 +16,7 @@
             readonly class="q-mt-none" label="MQTT Topic"
           >
             <template v-slot:append>
-              <q-icon name="mdi-content-copy" size="18px" @click="copyClipboard(mqttTopic)"/>
+              <q-icon name="mdi-content-copy" size="18px" @click="copyClipboard(mqttTopic, 'Topic')"/>
             </template>
           </q-input>
           <q-input
@@ -24,7 +24,7 @@
             readonly class="q-mt-none" label="MQTT User"
           >
             <template v-slot:append>
-              <q-icon name="mdi-content-copy" size="18px" @click="copyClipboard(device.mqtt_user)"/>
+              <q-icon name="mdi-content-copy" size="18px" @click="copyClipboard(device.mqtt_user, 'User')"/>
             </template>
           </q-input>
           <q-input
@@ -32,7 +32,7 @@
             readonly class="q-mt-none" label="MQTT Password"
           >
             <template v-slot:append>
-              <q-icon name="mdi-content-copy" size="18px" @click="copyClipboard(device.mqtt_user)"/>
+              <q-icon name="mdi-content-copy" size="18px" @click="copyClipboard(device.mqtt_password, 'Password')"/>
             </template>
           </q-input>
         </div>
@@ -84,9 +84,9 @@ export default defineComponent({
         this.device.is_active = value;
       }
     },
-    async copyClipboard(text) {
+    async copyClipboard(text, type) {
       await navigator.clipboard.writeText(text);
-      this.$q.notify({ message: 'MQTT Topic copied to clipboard.', type: 'info' });
+      this.$q.notify({ message: `MQTT ${type} copied to clipboard.`, type: 'info' });
     },
   },
 });

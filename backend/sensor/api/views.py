@@ -10,6 +10,7 @@ from django.db.models.functions import Cast
 from sensor.api.serializers import SensorReadingSerializer
 from metereolog.base_views import BaseListView
 from rest_framework import serializers
+from datetime import datetime
 
 
 class SensorChartView(APIView):
@@ -19,10 +20,17 @@ class SensorChartView(APIView):
         sensor = Sensor.objects.filter(identifier=sensor_uid, is_active=True).first()
         if not sensor:
             raise Http404
-        time_diff = int(request.query_params.get("interval_sec", 60))
-        start_time = timezone.now() - timedelta(seconds=time_diff)
+        current_time = timezone.now()
+        if start := request.query_params.get("start"):
+            start_time = datetime.fromisoformat(start.replace("Z", "+00:00"))
+        else:
+            start_time = current_time - timedelta(seconds=900)
+        if end := request.query_params.get("end"):
+            end_time = datetime.fromisoformat(end.replace("Z", "+00:00"))
+        else:
+            end_time = current_time
         rows = SensorReading.objects.filter(
-            sensor_uid=sensor_uid, timestamp__gte=start_time
+            sensor_uid=sensor_uid, timestamp__gte=start_time, timestamp__lte=end_time
         )
         if sensor.measuring_type != 'str':
             rows = rows.time_bucket('timestamp', '1 minute').annotate(

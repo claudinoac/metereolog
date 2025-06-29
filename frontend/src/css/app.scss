@@ -24,4 +24,26 @@
       background-color: white;
     }
   }
+
+  .delete-btn {
+    color: black;
+
+    &:hover {
+      color: $negative;
+    }
+  }
+  .edit-btn {
+    color: black;
+
+    &:hover {
+      color: $deep-orange-5;
+    }
+  }
+  .copy-icon {
+    color: black;
+
+    &:hover {
+      color: $primary;
+    }
+  }
 }
