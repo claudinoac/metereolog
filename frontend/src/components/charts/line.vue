@@ -1,6 +1,6 @@
 <template>
   <div class="line-chart">
-    <LineChart :data="chartData" :options="chartOptions" v-if="isLoaded" ref="chart"/>
+    <LineChart :data="chartData" :options="chartOptions" v-if="isLoaded" :key="componentKey"/>
   </div>
 </template>
 <script>
@@ -66,6 +66,7 @@ export default defineComponent({
   },
   data() {
     return {
+      componentKey: 0,
       chartOptions: {
         elements: {
           point: {
@@ -108,7 +109,7 @@ export default defineComponent({
     options: {
       deep: true,
       handler() {
-        this.$refs.chart.chart.update();
+        this.componentKey += 1;
       },
     },
   },
