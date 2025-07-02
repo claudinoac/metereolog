@@ -159,6 +159,8 @@ export default defineComponent({
       handler() {
         if (this.timeRange.start && this.timeRange.end) {
           this.getChartData();
+          this.chartOptions.scales.x.min = this.timeRange.start;
+          this.chartOptions.scales.x.max = this.timeRange.end;
         }
       },
     },
