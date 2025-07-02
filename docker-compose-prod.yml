@@ -21,6 +21,7 @@ services:
     environment:
       POSTGRES_USER: "${POSTGRES_USER}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
     volumes:
       - ./backend/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh:ro
     networks:
@@ -43,6 +44,7 @@ services:
       POSTGRES_USER: "${POSTGRES_USER}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
       DJANGO_SETTINGS_MODULE: "metereolog.settings.production"
+      POSTGRES_DB: "${POSTGRES_DB}"
     stdin_open: true
     tty: true
     networks:
@@ -66,8 +68,8 @@ services:
     volumes:
       - ./frontend/nginx/nginx.prod.conf:/etc/nginx/conf.d/prod.conf
       - ./frontend/dist:/var/www/dist
-      - ./backend/metereolog/static:/var/www/static
-      - ./backend/metereolog/media:/var/www/media
+      - ./backend/static:/var/www/static
+      - ./backend/media:/var/www/media
     networks:
       - metereolog
     extra_hosts:

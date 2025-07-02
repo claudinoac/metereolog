@@ -31,6 +31,15 @@ init:  ### Install dependencies and start applications
 	@ $(EXEC) python manage.py loaddata metereolog/fixtures/initial_data.json
 	@ $(EXEC) python3 manage.py createsuperuser
 
+.PHONY: deploy
+deploy:  ### Deploy application to production
+	@ docker compose -f docker-compose-prod.yml up -d
+	@ docker compose -f docker-compose-prod.yml exec api python manage.py migrate
+	@ docker compose -f docker-compose-prod.yml exec api python manage.py collectstatic --noinput
+	@ docker compose -f docker-compose-prod.yml restart api message-hub
+	@ docker compose -f docker-compose-prod.yml exec ui npx quasar build
+	@ docker compose -f docker-compose-prod.yml kill ui
+
 .PHONY: migrations $(ARGS)
 migrations: run-detached  ### Generate pending migrations
 	@ $(EXEC) python3 manage.py makemigrations $(ARGS)

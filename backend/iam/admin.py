@@ -34,10 +34,10 @@ class UserAdmin(UserAdmin):
             "classes": ("wide",),
             "fields": (
                 "first_name", "last_name", "email", "password1", "password2",
-                "is_admin", "is_active", "roles", "organization"
+                "is_admin", "is_active", "organization"
             )
         }
-    ))
+    ),)
     search_fields = ("email", "first_name", "last_name")
     ordering = ("email", "first_name", "last_name")
 

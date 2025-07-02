@@ -15,7 +15,7 @@ CSRF_TRUSTED_ORIGINS = ["https://app.metereolog.site"]
 DATABASES = {
     'default': {
         'ENGINE': 'timescale.db.backends.postgresql',
-        'NAME': 'metereolog',
+        'NAME': environ.get("POSTGRES_DB", 'metereolog'),
         'USER': environ.get("POSTGRES_USER"),
         'PASSWORD': environ.get("POSTGRES_PASSWORD"),
         'HOST': environ.get("POSTGRES_HOST", "postgres"),
