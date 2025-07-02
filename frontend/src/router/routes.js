@@ -1,5 +1,6 @@
 import { unLoggedRoutes, loggedRoutes as IAMRoutes }from '@/pages/iam/routes';
 import DeviceRoutes from '@/pages/device/routes';
+import SensorRoutes from '@/pages/sensor/routes';
 
 const routes = [
   ...unLoggedRoutes,
@@ -15,6 +16,7 @@ const routes = [
       {  name: 'home', path: 'home', component: () => import('pages/generic/home/index.vue') },
       ...IAMRoutes,
       ...DeviceRoutes,
+      ...SensorRoutes,
     ]
   },
   {

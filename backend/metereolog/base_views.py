@@ -41,3 +41,4 @@ class BaseListView(ListCreateAPIView):
                 self.get_base_queryset()
             )
         )
+

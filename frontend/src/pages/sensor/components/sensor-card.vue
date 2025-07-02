@@ -10,6 +10,7 @@
       </div>
       <div class="sensor-actions">
         <q-icon class="edit-btn" name="mdi-pencil-box" size="24px"/>
+        <q-icon class="delete-btn" name="mdi-trash-can" size="24px" @click="deleteSensor"/>
       </div>
     </div>
     <component
@@ -25,6 +26,7 @@ import LineChart from '@/components/charts/line.vue';
 
 export default defineComponent({
   name: 'sensor-card',
+  emits: ['deleteSensor'],
   components: {
     LineChart,
   },
@@ -142,7 +144,10 @@ export default defineComponent({
         }
         this.isChartLoaded = true;
       }
-    }
+    },
+    deleteSensor() {
+      this.$emit('deleteSensor', this.sensorData);
+    },
   },
   watch: {
     timeRange: {

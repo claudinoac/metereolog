@@ -14,7 +14,7 @@
     </div>
     <div class="charts">
       <template v-for="sensor in sensors" :key="sensor.identifier">
-        <SensorCard :sensorData="sensor" :timeRange="timeRange"/>
+        <SensorCard :sensorData="sensor" :timeRange="timeRange" @deleteSensor="deleteSensor"/>
       </template>
     </div>
   </div>
@@ -57,17 +57,29 @@ export default defineComponent({
     this.timeRange.end = this.$route.query?.end || currentTime.toISOString();
     this.timeRange.start = this.$route.query?.start || subDate(currentTime, { minutes: 30 }).toISOString();
     this.timeRangeSelection = { ...this.timeRange };
-    const response = await this.$api.get(`/device/${this.deviceId}/sensors`);
-    if (response.status === 200) {
-      this.sensors = response.data.results.map((item) => ({ ...item, chartLabel: `${item.description} (${item.unit})` }));
-    }
+    this.loadSensors();
   },
   methods: {
+    async loadSensors() {
+      const response = await this.$api.get(`/device/${this.deviceId}/sensors`);
+      if (response.status === 200) {
+        this.sensors = response.data.results.map((item) => ({ ...item, chartLabel: `${item.description} (${item.unit})` }));
+      }
+    },
     newSensor() {
-      this.$router.push({ name: 'new-sensor', params: { deviceId: this.deviceId } });
+      this.$router.push({ name: 'create-sensor', params: { deviceId: this.deviceId } });
     },
     updateTimeRange() {
       this.$router.push({ query: this.timeRangeSelection });
+    },
+    async deleteSensor(sensorData) {
+      this.$q.loading.show({ message: `Deleting sensor ${sensorData.name}...`});
+      const response = await this.$api.delete(`/sensor/${sensorData.identifier}`);
+      if (response.status === 204) {
+        this.$q.notify({ type: 'positive', message: `Sensor ${sensorData.name} successfully deleted` });
+      }
+      await this.loadSensors();
+      this.$q.loading.hide();
     },
   },
   watch: {
