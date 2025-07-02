@@ -20,11 +20,11 @@
             </template>
           </q-input>
           <q-input
-            :modelValue="device.mqtt_user" outlined dense
+            :modelValue="mqttUser" outlined dense
             readonly class="q-mt-none" label="MQTT User"
           >
             <template v-slot:append>
-              <q-icon name="mdi-content-copy" size="18px" @click="copyClipboard(device.mqtt_user, 'User')"/>
+              <q-icon name="mdi-content-copy" size="18px" @click="copyClipboard(mqttUser, 'User')"/>
             </template>
           </q-input>
           <q-input
@@ -65,7 +65,11 @@ export default defineComponent({
       };
     },
     mqttTopic() {
-      return `mqtt/${this.userData.organization.id}/${this.deviceId}`;
+      const orgId = this.userData.organization.id.replaceAll('-', '');
+      return `mqtt/${orgId}/${this.mqttUser}`;
+    },
+    mqttUser() {
+      return this.deviceId.replaceAll('-', '');
     },
   },
   created() {

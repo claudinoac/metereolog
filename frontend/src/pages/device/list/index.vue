@@ -3,7 +3,7 @@
     <div class="subheader">
       <div class="subheader--title">
         <span class="text-h4">Devices</span>
-        <q-btn color="primary" no-caps label="New Device"/>
+        <q-btn color="primary" no-caps label="New Device" :to="{ name: 'create-device' }"/>
       </div>
       <q-input outlined dense :modelValue="filter" @update:modelValue="filterRows" :debounce="300">
         <template v-slot:append>

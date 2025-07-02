@@ -2,6 +2,9 @@
 .q-page {
   padding: 20px 40px;
   background-color: $background;
+  .q-field__control {
+    background-color: white;
+  }
 
   .subheader {
     display: flex;

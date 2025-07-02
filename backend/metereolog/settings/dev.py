@@ -51,4 +51,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-BROKER_URL = "amqp://metereolog:metereolog@rabbitmq:5672/"
+RMQ_USER = "metereolog"
+RMQ_PASSWORD = "metereolog"
+RMQ_ADDR = "rabbitmq"
+RMQ_AMQP_PORT = 5672
+RMQ_API_PORT = 15672
+RMQ_SSL = False
+BROKER_URL = f"amqp://{RMQ_USER}:{RMQ_PASSWORD}@{RMQ_ADDR}:{RMQ_AMQP_PORT}/"
