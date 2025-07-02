@@ -1,6 +1,6 @@
 <template>
   <div class="line-chart">
-    <LineChart :data="chartData" :options="chartOptions" v-if="isLoaded"/>
+    <LineChart :data="chartData" :options="chartOptions" v-if="isLoaded" ref="chart"/>
   </div>
 </template>
 <script>
@@ -102,6 +102,14 @@ export default defineComponent({
           ...this.dataOptions,
         }],
       };
+    },
+  },
+  watch: {
+    options: {
+      deep: true,
+      handler() {
+        this.$refs.chart.chart.update();
+      },
     },
   },
 });
