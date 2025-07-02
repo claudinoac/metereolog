@@ -92,6 +92,8 @@ export default defineComponent({
               ticks: {
                 maxTicksLimit: 10,
               },
+              min: this.timeRange.start,
+              max: this.timeRange.end,
           },
           y: {
             max: 7,
@@ -115,6 +117,8 @@ export default defineComponent({
                 ticks: {
                   maxTicksLimit: 10,
                 },
+                min: this.timeRange.start,
+                max: this.timeRange.end,
             },
             y: {
               max: this.sensorData.upper_limit ?? 10,

@@ -48,11 +48,11 @@ class SensorChartView(APIView):
         if sensor.measuring_type != 'str':
             delta = end_time - start_time
             interval = self.time_buckets["second"]
-            if delta > timedelta(minutes=30):
+            if delta > timedelta(hours=1):
                 interval = self.time_buckets["minute"]
-            if delta > timedelta(hours=3):
+            if delta > timedelta(hours=12):
                 interval = self.time_buckets["hour"]
-            if delta > timedelta(days=3):
+            if delta > timedelta(days=7):
                 interval = self.time_buckets["day"]
             if delta > timedelta(weeks=3):
                 interval = self.time_buckets["week"]

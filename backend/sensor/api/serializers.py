@@ -14,8 +14,8 @@ class SensorReadingSerializer(serializers.ModelSerializer):
 
     def get_timestamp(self, instance):
         if isinstance(instance, dict):
-            return instance["bucket"]
-        return instance.timestamp
+            return instance["bucket"].isoformat()
+        return instance.timestamp.isoformat()
 
 
 class SensorSerializer(serializers.ModelSerializer):
