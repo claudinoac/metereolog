@@ -3,8 +3,8 @@ services:
     image: rabbitmq:4.1-management-alpine
     container_name: met-rmq
     environment:
-      RABBITMQ_DEFAULT_USER: "metereolog"
-      RABBITMQ_DEFAULT_PASS: "metereolog"
+      RABBITMQ_DEFAULT_USER: "${RABBITMQ_DEFAULT_USER}"
+      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_DEFAULT_PASS}"
     volumes:
       - "./.rmq_enabled_plugins:/etc/rabbitmq/enabled_plugins"
     ports:
@@ -19,13 +19,12 @@ services:
     container_name: met-postgres
     shm_size: 128mb
     environment:
-      POSTGRES_USER: metereolog
-      POSTGRES_PASSWORD: metereolog
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
     volumes:
       - ./backend/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh:ro
     networks:
       - metereolog
-
   api: &server-recipe
     build:
       context: "./backend"  
@@ -38,7 +37,12 @@ services:
     ports: 
       - 8009:8009
     environment:
-      SECRET_KEY: "a0RWOUNHbStmRkZsTjY1dUE3QXphSWJ1YWtVPQo" # change this for production environment
+      SECRET_KEY: "${SECRET_KEY}" # change this for production environment
+      RABBITMQ_DEFAULT_USER: "${RABBITMQ_DEFAULT_USER}"
+      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_DEFAULT_PASS}"
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      DJANGO_SETTINGS_MODULE: "metereolog.settings.production"
     stdin_open: true
     tty: true
     networks:
@@ -58,9 +62,12 @@ services:
     image: nginx
     container_name: metereolog
     ports:
-      - 8008:8008
+      - 80:8008
     volumes:
-      - ./frontend/nginx:/etc/nginx/conf.d
+      - ./frontend/nginx/nginx.prod.conf:/etc/nginx/conf.d/prod.conf
+      - ./frontend/dist:/var/www/dist
+      - ./backend/metereolog/static:/var/www/static
+      - ./backend/metereolog/media:/var/www/media
     networks:
       - metereolog
     extra_hosts:

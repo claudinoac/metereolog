@@ -2,8 +2,8 @@ ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 $(eval $(ARGS):;@:)
 MAKEFLAGS += --silent
 $(eval TEST_TYPE := $(shell [[ -z "$(ARGS)" ]] && echo "null" || echo "$(ARGS)"))
-RUN = docker compose run --rm -w /code api
-EXEC = docker compose exec -w /code api
+RUN = docker compose -f docker-compose-dev.yml run --rm -w /code api
+EXEC = docker compose -f docker-compose-dev.yml exec -w /code api
 SHELL = /bin/bash
 CURRENT_ARCH := $(shell /usr/bin/uname -m)
 export CURRENT_ARCH
@@ -23,9 +23,9 @@ init:  ### Install dependencies and start applications
 	 " -> Ubuntu: https://docs.docker.com/install/linux/docker-ce/ubuntu/ \n"\
 	 " -> Fedora: https://docs.docker.com/install/linux/docker-ce/fedora/ "; exit 1;)
 	@ -docker network create metereolog
-	@ docker-compose up -d
+	@ docker compose -f docker-compose-dev.yml up -d
 	@ echo -n 'Waiting for postgres to be ready...'
-	@ while true; do echo -n '.'; docker compose exec postgres pg_isready >> /dev/null && break; done
+	@ while true; do echo -n '.'; docker compose -f docker-compose-dev.yml exec postgres pg_isready >> /dev/null && break; done
 	@ make migrations
 	@ make migrate
 	@ $(EXEC) python manage.py loaddata metereolog/fixtures/initial_data.json
@@ -53,15 +53,15 @@ bash: run-detached  ### Opens the application shell
 
 .PHONY: run-detached
 run-detached:  ### Runs all containers (backend and frontend)
-	@ docker compose up -d --no-recreate
+	@ docker compose -f docker-compose-dev.yml up -d --no-recreate
 
 .PHONY: build
 build:  ### Build local stack
-	@ docker compose build
+	@ docker compose -f docker-compose-dev.yml build
 
 .PHONY: stop
 stop:  ### Stop the application
-	@ docker compose stop
+	@ docker compose -f docker-compose-dev.yml stop
 
 .PHONY: build-firmware
 build-firmware:  ### builds the firmware binary
