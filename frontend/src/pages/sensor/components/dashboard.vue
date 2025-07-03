@@ -5,11 +5,17 @@
       <q-btn label="New Sensor" no-caps color="primary" @click="newSensor"/>
     </div>
     <div class="column">
-      <b class="q-mb-sm q-mt-md">Date Range:</b>
-      <q-form class="row" @submit.prevent="updateTimeRange">
-        <DateTimePicker class="time-picker q-mr-md" label="From" v-model="timeRangeSelection.start"/>
-        <DateTimePicker class="time-picker" label="To" v-model="timeRangeSelection.end"/>
-        <q-btn label="Apply Time Range" color="primary" class="q-ml-md" type="submit"/>
+      <b class="q-mb-sm q-mt-md">Time Range:</b>
+      <q-form class="column" @submit.prevent="updateTimeRange">
+        <div class="row items-center">
+          <q-select outlined dense options-dense label="Preset" :options="timePresets" map-options emit-value v-model="timeFilterType"/>
+          <q-icon name="mdi-refresh" class="refresh-icon" size="28px" @click="updateTimeRange"/>
+        </div>
+        <div class="row q-mt-md" v-if="timeFilterType === 'custom'">
+          <DateTimePicker class="time-picker q-mr-md" label="From" v-model="timeRangeSelection.start"/>
+          <DateTimePicker class="time-picker" label="To" v-model="timeRangeSelection.end"/>
+          <q-btn label="Apply Time Range" color="primary" class="q-ml-md" type="submit"/>
+        </div>
       </q-form>
     </div>
     <div class="charts">
@@ -24,6 +30,8 @@ import { defineComponent } from 'vue';
 import SensorCard from '@/pages/sensor/components/sensor-card.vue';
 import DateTimePicker from '@/components/datetime-picker.vue';
 import { sub as subDate } from 'date-fns';
+import { is } from 'quasar';
+
 
 export default defineComponent({
   name: 'sensors-dashboard',
@@ -49,6 +57,34 @@ export default defineComponent({
       timeRangeSelection: {
         start: null,
         end: null,
+      },
+      timeFilterType: 'last_half_hour',
+      timePresets: [
+        { label: 'Last minute', value: 'last_min' },
+        { label: 'Last 5 min', value: 'last_five_min' },
+        { label: 'Last 15 min', value: 'last_quarter_hour' },
+        { label: 'Last 30 min', value: 'last_half_hour' },
+        { label: 'Last 1 hour', value: 'last_hour' },
+        { label: 'Last 6 hours', value: 'last_six_hours' },
+        { label: 'Last 12 hours', value: 'last_twelve_hours' },
+        { label: 'Last 24 hours', value: 'last_day' },
+        { label: 'Last week', value: 'last_week' },
+        { label: 'Last month', value: 'last_month' },
+        { label: 'Last year', value: 'last_year' },
+        { label: 'Custom', value: 'custom' },
+      ],
+      timeMap: {
+        'last_min': { minutes: 1 },
+        'last_five_min': { minutes: 5 },
+        'last_quarter_hour': { minutes: 15 },
+        'last_half_hour': { minutes: 30 },
+        'last_hour': { hours: 1 },
+        'last_six_hours': { hours: 6 },
+        'last_twelve_hours': { hours: 12 },
+        'last_day': { hours: 24 },
+        'last_week': { days: 7 },
+        'last_month': { months: 1 },
+        'last_year': { months: 12 },
       }
     };
   },
@@ -70,7 +106,17 @@ export default defineComponent({
       this.$router.push({ name: 'create-sensor', params: { deviceId: this.deviceId } });
     },
     updateTimeRange() {
-      this.$router.push({ query: this.timeRangeSelection });
+      if (this.timeFilterType !== 'custom') {
+        const currentTime = new Date();
+        this.timeRange.end = currentTime.toISOString();
+        this.timeRange.start = subDate(currentTime, this.timeMap[this.timeFilterType]).toISOString();
+        this.updateTimeRange();
+      }
+      if (is.deepEqual(this.$route.query, this.timeRangeSelection)) {
+        this.loadSensors();
+      } else {
+        this.$router.push({ query: this.timeRangeSelection });
+      }
     },
     async deleteSensor(sensorData) {
       this.$q.loading.show({ message: `Deleting sensor ${sensorData.name}...`});
@@ -88,6 +134,9 @@ export default defineComponent({
       handler() {
         this.timeRange = { ...this.timeRangeSelection };
       }
+    },
+    timeFilterType () {
+      this.updateTimeRange();
     }
   },
 });
@@ -108,6 +157,13 @@ export default defineComponent({
 
   .time-picker {
     max-width: 300px;
+  }
+
+  .refresh-icon {
+    margin-left: 10px;
+    &:hover {
+      color: $info;
+    }
   }
 }
 </style>
