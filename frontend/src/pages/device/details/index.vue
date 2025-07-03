@@ -68,9 +68,9 @@ export default defineComponent({
       device: {},
       deviceId: this.$route.params.deviceId,
       domainMap: {
-        'localhost': 'localhost:1883',
-        'app.metereolog.site': 'mqtt.metereolog.site',
-        'app.staging.metereolog.site': 'mqtt.staging.metereolog.site',
+        'localhost': 'mqtt://localhost:1883',
+        'app.metereolog.site': 'mqtt://mqtt.metereolog.site:1883',
+        'app.staging.metereolog.site': 'mqtt://mqtt.staging.metereolog.site:1883',
       }
     };
   },

@@ -17,7 +17,7 @@
             To get started, view or add your devices, configure sensors and view their data in near real-time.
           </span>
           <div class="actions q-pt-lg">
-            <q-btn class="q-mr-md" color="primary" label="Add Device"/>
+            <q-btn class="q-mr-md" color="primary" label="Add Device" :to="{ name: 'create-device' }"/>
             <q-btn :to="{ name: 'list-devices' }" color="primary" label="View Devices"/>
           </div>
         </div>
