@@ -4,8 +4,8 @@
       <div class="sensor-info">
         <span><b class="q-pr-sm">Name:</b>{{ sensorData.name }}</span>
         <div class="flex row items-center">
-          <span><b class="q-pr-sm">ID:</b> {{ sensorData.identifier }}</span>
-          <q-icon class="q-pl-sm copy-icon" size="16px" name="mdi-content-copy" @click="copyClipboard(sensorData.identifier)"/>
+          <span><b class="q-pr-sm">ID:</b> {{ sensorId }}</span>
+          <q-icon class="q-pl-sm copy-icon" size="16px" name="mdi-content-copy" @click="copyClipboard(sensorId)"/>
         </div>
       </div>
       <div class="sensor-actions">
@@ -72,6 +72,9 @@ export default defineComponent({
     },
     isDirectionChart() {
       return this.sensorData.unit === '-';
+    },
+    sensorId() {
+      return this.sensorData.identifier.replaceAll('-', '');
     }
   },
   async created() {

@@ -10,7 +10,7 @@
       <q-input outlined dense v-model="form.name" label="Name" class="q-mb-sm" :rules="[ val => !!val || 'This field is required']"/>
       <q-input outlined dense v-model="form.model" label="Model" class="q-mb-lg"/>
       <q-input outlined dense v-model="form.brand" label="Brand" class="q-mb-lg"/>
-      <q-input outlined dense v-model="form.serial" label="Serial Number" class="q-mb-lg"/>
+      <q-input outlined dense v-model="form.serial_number" label="Serial Number" class="q-mb-lg"/>
       <q-btn type="submit" label="Save" color="primary"/>
     </q-form>
   </q-page>
@@ -26,7 +26,7 @@ export default defineComponent({
         name: '',
         model: '',
         brand: '',
-        serial: '',
+        serial_number: '',
       },
     };
   },

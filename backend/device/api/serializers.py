@@ -10,6 +10,9 @@ class DeviceReadSerializer(serializers.ModelSerializer):
         fields = [
             "name",
             "identifier",
+            "brand",
+            "model",
+            "serial_number",
             "organization",
             "is_active",
             "mqtt_user",
@@ -27,6 +30,9 @@ class DeviceSerializer(DeviceReadSerializer):
         model = Device
         fields = [
             "name",
+            "brand",
+            "model",
+            "serial_number",
             "identifier",
             "organization",
             "is_active",
