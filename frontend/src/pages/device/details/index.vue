@@ -124,7 +124,7 @@ export default defineComponent({
     display: flex;
     flex-flow: row;
     padding-top: 30px;
-    gap: 20px;
+    gap: 40px;
 
     span {
       display: flex;
