@@ -113,8 +113,8 @@ export default defineComponent({
         pointRadius: 5,
       };
     } else {
-      const minLimit = this.sensorData.upper_limit ?? 10;
-      const maxLimit = this.sensorData.lower_limit ?? 0;
+      const minLimit = this.sensorData.lower_limit ?? 0;
+      const maxLimit = this.sensorData.upper_limit ?? 10;
       this.chartOptions = {
         scales: {
             x: {
