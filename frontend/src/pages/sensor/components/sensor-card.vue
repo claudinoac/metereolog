@@ -126,6 +126,7 @@ export default defineComponent({
             y: {
               max: this.sensorData.upper_limit ?? 10,
               min: this.sensorData.lower_limit ?? 0,
+              maxTicksLimit: 10,
             }
         },
       };
