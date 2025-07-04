@@ -127,7 +127,7 @@ export default defineComponent({
               max: this.sensorData.upper_limit ?? 10,
               min: this.sensorData.lower_limit ?? 0,
               ticks: {
-                maxTicksLimit: 10,
+                stepSize: ((this.sensorData.upper_limit ?? 10) - (this.sensorData.lower_limit ?? 0)) / 10,
               }
             }
         },
