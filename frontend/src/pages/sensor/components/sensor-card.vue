@@ -128,9 +128,6 @@ export default defineComponent({
             y: {
               max: maxLimit,
               min: minLimit,
-              ticks: {
-                stepSize: (maxLimit - minLimit) / 10,
-              }
             }
         },
       };
