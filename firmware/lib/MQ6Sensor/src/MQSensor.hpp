@@ -22,7 +22,7 @@ class MQ6Sensor {
         float RL = 4700.0f;
         float reference_voltage = 3.9f;
         int adc_resolution = 4095;
-        adc_channel_t adc_channel = ADC1_CHANNEL_6;
+        adc2_channel_t adc_channel = ADC2_CHANNEL_3;
         float calibrate();
         float calculateRs(float voltage);
 };

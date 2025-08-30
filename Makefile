@@ -7,6 +7,8 @@ EXEC = docker compose -f docker-compose-dev.yml exec -w /code api
 SHELL = /bin/bash
 CURRENT_ARCH := $(shell /usr/bin/uname -m)
 export CURRENT_ARCH
+include firmware/.env
+export
 
 # HELP COMMANDS
 .PHONY: help

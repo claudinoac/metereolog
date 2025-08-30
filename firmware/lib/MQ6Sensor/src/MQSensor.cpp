@@ -1,15 +1,14 @@
 #include "MQSensor.hpp"
 
 MQ6Sensor::MQ6Sensor() {
-    adc1_config_width(ADC_WIDTH_BIT_12);
-    adc1_config_channel_atten(this->adc_channel, ADC_ATTEN_DB_11);
+    adc2_config_channel_atten(this->adc_channel, ADC_ATTEN_DB_11);
     this->calibrate();
 }
 
 MQ6Info MQ6Sensor::read() {
     MQ6Info current_info = {0, 0.0f};
 
-    current_info.raw_value = adc1_get_raw(this->adc_channel);
+    adc2_get_raw(this->adc_channel, ADC_WIDTH_BIT_12, &current_info.raw_value);
 
     if (adc_resolution > 0) {
         current_info.voltage = (current_info.raw_value / (float)adc_resolution) * reference_voltage;
