@@ -7,8 +7,6 @@ EXEC = docker compose -f docker-compose-dev.yml exec -w /code api
 SHELL = /bin/bash
 CURRENT_ARCH := $(shell /usr/bin/uname -m)
 export CURRENT_ARCH
-include firmware/.env
-export
 
 # HELP COMMANDS
 .PHONY: help
@@ -81,3 +79,7 @@ build-firmware:  ### builds the firmware binary
 .PHONY: flash-firmware
 flash-firmware:  ### Flashes the firmware binary into the board
 	@ pio run --target upload -d firmware
+
+.PHONY: device-monitor
+device-monitor: ### Opens serial monitor to weather station device
+	@ pio device monitor -d firmware

@@ -1,5 +1,5 @@
-#ifndef WINDDIRECTIONSENSOR_H
-#define WINDDIRECTIONSENSOR_H
+#ifndef WIND_DIRECTION_SENSOR_H
+#define WIND_DIRECTION_SENSOR_H
 
 #include <driver/gpio.h>
 #include <Arduino.h>
@@ -11,9 +11,9 @@ typedef struct {
     char direction[3]; // direção em texto
 } WindDirectionInfo;
 
-class WindDirectionSensor {
+class Anemoscope {
     public:
-        WindDirectionSensor(gpio_num_t pin);
+        Anemoscope(gpio_num_t pin);
         WindDirectionInfo read();
     private:
         gpio_num_t pin;

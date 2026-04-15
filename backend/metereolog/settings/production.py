@@ -1,5 +1,6 @@
-from pathlib import Path
 from os import environ, path
+from pathlib import Path
+
 from metereolog.settings.base import *  # noqa
 
 BASE_DIR = Path(__file__).resolve().parent.parent

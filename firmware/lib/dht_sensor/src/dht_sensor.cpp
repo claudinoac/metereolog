@@ -1,7 +1,7 @@
 /*
  * =====================================================================================
  *
- *       Filename:  DHTSensor.cpp
+ *       Filename:  dht_sensor.cpp
  *
  *    Description: Basic Wrapper for DHT sensor
  *
@@ -17,7 +17,7 @@
  */
 #include <stdlib.h>
 #include <Arduino.h>
-#include "DHTSensor.hpp"
+#include "dht_sensor.hpp"
 
 
 DHTSensor::DHTSensor(gpio_num_t port, DHTModel_t model) {

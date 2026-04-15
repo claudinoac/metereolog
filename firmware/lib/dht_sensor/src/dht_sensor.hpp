@@ -1,7 +1,7 @@
 /*
  * =====================================================================================
  *
- *       Filename:  DHT.hpp
+ *       Filename:  dht_sensor.hpp
  *
  *    Description: Basic Wrapper for DHT sensor 
  *
@@ -15,8 +15,8 @@
  *
  * =====================================================================================
  */
-#ifndef DHTSENSOR_H
-#define DHTSENSOR_H
+#ifndef DHT_SENSOR_H
+#define DHT_SENSOR_H
 #include <stdio.h>
 #include <DHTNew.h>
 #include <driver/gpio.h>

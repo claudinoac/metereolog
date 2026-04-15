@@ -1,6 +1,5 @@
-
-#ifndef ANEMOMETERSENSOR_H
-#define ANEMOMETERSENSOR_H
+#ifndef ANEMOMETER_HPP
+#define ANEMOMETER_HPP
 
 #include <driver/gpio.h>
 #include <Arduino.h>
@@ -10,12 +9,12 @@ typedef struct {
     unsigned int pulses; // pulse count
 } AnemometerInfo;
 
-class AnemometerSensor {
+class Anemometer {
     public:
-        AnemometerSensor(gpio_num_t pin);
+        Anemometer(gpio_num_t pin);
         AnemometerInfo read();
         void IRAM_ATTR handleInterrupt();
-        static AnemometerSensor *getInstance();
+        static Anemometer *getInstance();
         
     private:
         gpio_num_t pin;

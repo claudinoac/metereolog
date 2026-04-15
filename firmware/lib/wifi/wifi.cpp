@@ -20,11 +20,15 @@
 Wifi::Wifi(char *ssid, char* password) {
     this->ssid = strdup(ssid);
     this->password = strdup(password);
-    this->client = new WiFiClient();
+    this->client = new WiFiClientSecure();
     WiFi.begin(this->ssid, this->password);
     WiFi.mode(WIFI_STA);
-    Serial.print("Connecting to wifi...");
+    Serial.print("Connecting to wifi ");
+    Serial.print("'");
+    Serial.print(this->ssid);
+    Serial.print("'");
     while(WiFi.status() != WL_CONNECTED) {
+        Serial.print(WiFi.status());
         delay(500);
         Serial.print(".");
     }
@@ -35,6 +39,6 @@ Wifi::Wifi(char *ssid, char* password) {
     Serial.println(WiFi.localIP());
 }
 
-WiFiClient *Wifi::getClient() {
+WiFiClientSecure *Wifi::getClient() {
     return this->client;
 }

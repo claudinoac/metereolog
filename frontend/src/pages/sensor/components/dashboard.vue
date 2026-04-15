@@ -110,7 +110,6 @@ export default defineComponent({
         const currentTime = new Date();
         this.timeRange.end = currentTime.toISOString();
         this.timeRange.start = subDate(currentTime, this.timeMap[this.timeFilterType]).toISOString();
-        this.updateTimeRange();
       }
       if (is.deepEqual(this.$route.query, this.timeRangeSelection)) {
         this.loadSensors();

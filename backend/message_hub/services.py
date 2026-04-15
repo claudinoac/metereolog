@@ -1,8 +1,9 @@
-from django.conf import settings
-import string
-import random
 import os
+import random
+import string
+
 import requests
+from django.conf import settings
 
 
 class RabbitMQService:

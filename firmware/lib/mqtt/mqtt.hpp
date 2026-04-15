@@ -24,8 +24,8 @@
 #include "wifi.hpp"
 
 
-#define MSG_BUFFER_SIZE  512
-#define MQTT_MAX_PACKET_SIZE 512
+#define MSG_BUFFER_SIZE  1024
+#define MQTT_MAX_PACKET_SIZE 1024
 
 class MQTT {
     PubSubClient *client;

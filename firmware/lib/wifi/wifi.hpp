@@ -20,16 +20,17 @@
 #define WIFI_H
 
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
 
 
 class Wifi {
-    WiFiClient *client;
+    WiFiClientSecure *client;
     char *ssid;
     char *password;
 
     public:
         Wifi(char *ssid, char *password);
-        WiFiClient *getClient();
+        WiFiClientSecure *getClient();
 };
 
 #endif

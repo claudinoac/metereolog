@@ -1,18 +1,18 @@
-#include "AnemometerSensor.hpp"
+#include "anemometer.hpp"
 #include <Arduino.h>
 
-AnemometerSensor* anemometer = nullptr;
+Anemometer* anemometer_ptr = nullptr;
 
 // Interrupt routine Handler (defined outside class)
 void IRAM_ATTR isrHandler() {
-    if (AnemometerSensor::getInstance() != nullptr) {
-        AnemometerSensor::getInstance()->handleInterrupt();
+    if (Anemometer::getInstance() != nullptr) {
+        Anemometer::getInstance()->handleInterrupt();
     }
 }
 
-AnemometerSensor::AnemometerSensor(gpio_num_t pin) 
+Anemometer::Anemometer(gpio_num_t pin) 
     : pin(pin), pulseCount(0), ts_read(0) {
-    anemometer = this; // Turn this class into a singleton
+    anemometer_ptr = this; // Turn this class into a singleton
     
     pinMode(pin, INPUT_PULLUP);
     gpio_pad_select_gpio(pin);
@@ -21,16 +21,16 @@ AnemometerSensor::AnemometerSensor(gpio_num_t pin)
     attachInterrupt(digitalPinToInterrupt(pin), isrHandler, FALLING);
 }
 
-AnemometerSensor *AnemometerSensor::getInstance() {
-    return anemometer;
+Anemometer *Anemometer::getInstance() {
+    return anemometer_ptr;
 }
 
 // interrupt handler to count pulses
-void IRAM_ATTR AnemometerSensor::handleInterrupt() {
+void IRAM_ATTR Anemometer::handleInterrupt() {
     pulseCount++;
 }
 
-AnemometerInfo AnemometerSensor::read() {
+AnemometerInfo Anemometer::read() {
     AnemometerInfo info = {0, 0};
     delay(1000); // Medição por 1 segundo
     

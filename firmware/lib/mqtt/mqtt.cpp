@@ -34,6 +34,7 @@ MQTT::MQTT(
     } else {
         this->client_id = strdup(client_id);
     }
+    this->wifi_client->getClient()->setInsecure();
     this->client->setServer(this->broker_addr, this->broker_port);
     this->client->setCallback(this->handle_incoming_message);
 };

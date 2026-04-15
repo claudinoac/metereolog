@@ -1,18 +1,22 @@
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.viewsets import ViewSet
-from django.shortcuts import Http404
-from sensor.models import Sensor, SensorReading
-from django.utils import timezone
-from datetime import timedelta
+import logging
+from datetime import datetime, timedelta
+
 from django.db.models import Avg, FloatField
 from django.db.models.functions import Cast
-from sensor.api.serializers import SensorReadingSerializer, SensorSerializer, SensorCreateSerializer
-from metereolog.base_views import BaseListView
-from datetime import datetime
+from django.shortcuts import Http404
+from django.utils import timezone
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.viewsets import ViewSet
+
 from device.models import Device
+from metereolog.base_views import BaseListView
+from sensor.api.serializers import SensorCreateSerializer, SensorReadingSerializer, SensorSerializer
+from sensor.models import Sensor, SensorReading
+
+logger = logging.getLogger(__name__)
 
 
 class SensorChartView(APIView):
@@ -64,6 +68,7 @@ class SensorChartView(APIView):
             rows = rows.time_bucket('timestamp', interval).annotate(
                 value=Cast('value', output_field=FloatField())
             ).annotate(Avg('value'))
+        logger.info(rows)
         serializer = SensorReadingSerializer(rows, many=True)
         return Response(
             data=serializer.data

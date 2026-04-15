@@ -1,5 +1,6 @@
-from pathlib import Path
 from os import environ
+from pathlib import Path
+
 from metereolog.settings.base import *  # noqa
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,16 +24,23 @@ DATABASES = {
 }
 
 LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
         },
     },
-    "root": {
-        "handlers": ["console"],
-        "level": "INFO",
+    'loggers': {
+        'django.db.backends': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False, # Important to avoid duplicate logging if root logger also handles DEBUG
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO', # Set a higher level for root to avoid overwhelming logs
     },
 }
 

@@ -1,13 +1,13 @@
-#include "WindDirectionSensor.hpp"
+#include "anemoscope.hpp"
 #include "driver/adc.h"
 
-WindDirectionSensor::WindDirectionSensor(gpio_num_t pin) : pin(pin), lastVoltage(0.0) {
+Anemoscope::Anemoscope(gpio_num_t pin) : pin(pin), lastVoltage(0.0) {
     analogSetPinAttenuation(pin, ADC_6db);
     gpio_pad_select_gpio(pin);
     gpio_set_direction(pin, GPIO_MODE_INPUT);
 }
 
-WindDirectionInfo WindDirectionSensor::read() {
+WindDirectionInfo Anemoscope::read() {
     WindDirectionInfo info = {0.0, 0, ""};
     int raw = analogRead((uint8_t)pin);
     info.voltage = raw * (1.7 / 4095.0);

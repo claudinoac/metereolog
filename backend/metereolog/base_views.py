@@ -1,6 +1,10 @@
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import ListCreateAPIView
+import logging
+
 from django.db.models import Q
+from rest_framework.generics import ListCreateAPIView
+from rest_framework.permissions import IsAuthenticated
+
+logger = logging.getLogger(__name__)
 
 
 class BaseListView(ListCreateAPIView):
@@ -36,9 +40,10 @@ class BaseListView(ListCreateAPIView):
         return self.model_class.objects.filter(organization=self.request.user.organization)
 
     def get_queryset(self):
-        return self.order_queryset(
+        queryset = self.order_queryset(
             self.filter_queryset(
                 self.get_base_queryset()
             )
         )
+        return queryset
 
