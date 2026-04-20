@@ -19,7 +19,7 @@ The architecture is distributed and based on microservices and asynchronous comm
 - **Containerization (Docker):** Simplifies deployment, portability, and environment management.
 - **Modularity:** Each system component is independent, allowing isolated development and maintenance.
 
-![Project Architecture Diagram](docs/architecture.png)
+![Project Architecture Diagram](docs/architecture.svg)
 
 ## 3. Modular Project Structure and Technologies Used
 
