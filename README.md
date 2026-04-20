@@ -10,8 +10,9 @@ The main goal is to create a complete system for weather monitoring. This includ
 
 The architecture is distributed and based on microservices and asynchronous communication, as shown in the diagram. The main features include:
 
-- **Distributed Data Collection:** Sensors are connected to embedded devices (ESP-32) that act as the network's "edge".
-- **Asynchronous, Message-Oriented Communication:** The MQTT protocol is used to transmit data from devices to the message broker (RabbitMQ), ensuring low latency and resilience.
+- **Distributed Data Collection:** Sensors are connected to embedded devices (HELTEC WiFi LoRa v3) that act as the network's "edge".
+- **Local Gateways**: One local internet-connected dievice that aggregate data from stations in the region via LoRaWAN and transmit over the internet to the web platform via MQTT. 
+- **Asynchronous, Message-Oriented Communication:** The MQTT protocol is used to transmit data from gateways to the message broker (RabbitMQ), ensuring low latency and resilience.
 - **Centralized Message Processing:** RabbitMQ acts as a central hub for all sensor messages, enabling routing and processing by other components.
 - **Optimized Data Persistence:** PostgreSQL and TimescaleDB provide a robust relational database optimized for time-series data.
 - **RESTful API:** Facilitates communication between the frontend and backend, offering access to platform data and functionality.
@@ -31,15 +32,31 @@ The architecture is distributed and based on microservices and asynchronous comm
   - **Wind Direction Sensor:** Measures wind direction.
   - **MQ-6:** Measures petroleum-based gas such as propane and butane
 
-- **ESP-32 (Sensor Bus / MQTT Router):**
+- **Heltec WiFi LoRa 32 v3 (Sensor Bus / Weather Station):**
   - Microcontroller responsible for reading sensor data.
   - Acts as the local station’s “brain”.
-  - Publishes sensor data to the MQTT broker.
-  - **Technologies:** PlatformIO (C++ SDK).
+  - Transmit sensor data to the Gateway node via LoRaWAN
+  - **Technologies:** PlatformIO (C++ SDK), LoRaWAN, WiFi.
   - **Features:**
-    - Base libraries for each sensor (DHT-11, Anemometer, Wind Direction).
+    - Base libraries for each sensor and peripherals (DHT-11, Anemometer, Wind Direction, WiFi, LoRa, etc.).
     - Structured firmware codebase.
-    - MQTT integration for data transmission.
+    - Local wifi network to view real-time sensors data.
+    - Firmware update via OTA (WiFi).
+    - Doesn't depend on internet (data transmission via LoRaWAN).
+
+- **Heltec WiFi LoRa 32 v3 (Gateway):**
+  - Microcontroller responsible for receiving data from stations via LoRaWAN
+  - Publishes sensor data from stations to the MQTT broker.
+  - Firmware update via OTA (WiFi).
+  - MQTT integration for data transmission.
+  - **Technologies:**: PlatformIO (C++ SDK), LoRaWAN, WiFi.
+  - **Features:**
+    - Base libraries for peripherals (WiFi, LoRa, etc.)
+    - Can route data from multiple stations on LoRaWAN reach.
+    - Routes data to MQTT broker based on each station specs (credentials, topics).
+    - Structured firmware codebase.
+    - Firmware update via OTA (WiFi).
+
 
 ### 3.2. Communication and Messaging Module
 
