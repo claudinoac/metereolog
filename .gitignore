@@ -47,3 +47,4 @@
 # MacOS specific
 .DS_Store
 **/*.env
+docs/circuit_diagrams/metereolog/metereolog-backups/*.zip

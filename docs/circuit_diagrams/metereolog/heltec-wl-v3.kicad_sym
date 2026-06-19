@@ -1,0 +1,59 @@
+(kicad_symbol_lib 
+  (version 20251024)
+  (generator "kicad_symbol_editor")
+  (symbol "Heltec_WiFi_LoRa32_V3"
+    (polyline
+      (pts (xy -1000 1000) (xy 3000 1000) (xy 3000 -1000) (xy -1000 -1000))
+      (stroke (width 0.254) (type solid))
+      (fill (type none))
+    )
+    (property "Reference" "#U?" (at 0 0 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "Heltec WiFi LoRa 32 V3" (at 0 1200 0) (effects (font (size 1.27 1.27))))
+    
+    (pin passive line (at -2000 2500 180) (name "3V3") (number "1"))
+    (pin passive line (at -2000 2000 180) (name "EN") (number "2"))
+    (pin power_in line (at -2000 1500 180) (name "GND") (number "3"))
+    (pin passive line (at -2000 1000 180) (name "GPIO23") (number "4"))
+    
+    (pin passive line (at -2000 500 180) (length 2.54) (name "GPIO22") (number "5"))
+    (pin passive line (at -2000 0 180) (length 2.54) (name "GPIO21") (number "6"))
+    (pin passive line (at -2000 -500 180) (length 2.54) (name "GPIO19") (number "7"))
+    (pin passive line (at -2000 -1000 180) (length 2.54) (name "GPIO18") (number "8"))
+    (pin passive line (at -2000 -1500 180) (length 2.54) (name "GPIO17") (number "9"))
+    (pin passive line (at -2000 -2000 180) (length 2.54) (name "GPIO16") (number "10"))
+    (pin passive line (at -2000 -2500 180) (length 2.54) (name "GPIO15") (number "11"))
+    
+    (pin passive line (at 0 2500 0) (length 2.54) (name "GPIO14") (number "12"))
+    (pin passive line (at 0 2000 0) (length 2.54) (name "GPIO13") (number "13"))
+    (pin passive line (at 0 1500 0) (length 2.54) (name "GPIO12") (number "14"))
+    (pin passive line (at 0 1000 0) (length 2.54) (name "GPIO11") (number "15"))
+    (pin passive line (at 0 500 0) (length 2.54) (name "GPIO10") (number "16"))
+    (pin passive line (at 0 0 0) (length 2.54) (name "GPIO9") (number "17"))
+    (pin passive line (at 0 -500 0) (length 2.54) (name "GPIO8") (number "18"))
+    (pin passive line (at 0 -1000 0) (length 2.54) (name "GPIO7") (number "19"))
+    (pin passive line (at 0 -1500 0) (length 2.54) (name "GPIO6") (number "20"))
+    (pin passive line (at 0 -2000 0) (length 2.54) (name "GPIO5") (number "21"))
+    
+    (pin passive line (at 2000 2500 0) (length 2.54) (name "VBAT") (number "22"))
+    (pin passive line (at 2000 2000 0) (length 2.54) (name "5V") (number "23"))
+    (pin passive line (at 2000 1500 0) (length 2.54) (name "GPIO4") (number "24"))
+    (pin passive line (at 2000 1000 0) (length 2.54) (name "GPIO3") (number "25"))
+    (pin passive line (at 2000 500 0) (length 2.54) (name "GPIO2") (number "26"))
+    (pin passive line (at 2000 0 0) (length 2.54) (name "GPIO1") (number "27"))
+    (pin passive line (at 2000 -500 0) (length 2.54) (name "GPIO0") (number "28"))
+    (pin passive line (at 2000 -1000 0) (length 2.54) (name "TXD0") (number "29"))
+    (pin passive line (at 2000 -1500 0) (length 2.54) (name "RXD0") (number "30"))
+    
+    (pin passive line (at 2000 -2000 0) (length 2.54) (name "LoRa_CS") (number "31"))
+    (pin passive line (at 4000 0 90) (length 2.54) (name "LoRa_RST") (number "32"))
+    (pin passive line (at 4000 -500 90) (length 2.54) (name "LoRa_DIO0") (number "33"))
+    
+    (polyline
+      (pts (xy -3000 3000) (xy 5000 3000) (xy 5000 -3000) (xy -3000 -3000))
+      (stroke (width 0.254) (type solid))
+      (fill (type none)))
+    
+    (property "ki_keywords" "ESP32,LoRa,OLED,Heltec,WiFi" (at 0 1400 0) (effects hide))
+    (property "ki_description" "Heltec WiFi LoRa 32 V3 ESP32-S3 Dev Board" (at 0 1600 0) (effects hide))
+  )
+)

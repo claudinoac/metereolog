@@ -1,0 +1,5 @@
+(fp_lib_table
+	(version 7)
+	(lib (name "heltec_wifi_lora") (type "KiCad") (uri "/Users/claudinoac/Downloads/WIFI_KIT_32__V3_ (1)") (options "") (descr ""))
+	(lib (name "logical_converter") (type "KiCad") (uri "${KIPRJMOD}/logical_converter.pretty") (options "") (descr ""))
+)
