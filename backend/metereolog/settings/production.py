@@ -10,8 +10,8 @@ SECRET_KEY = environ.get("SECRET_KEY")
 
 DEBUG = False
 
-ALLOWED_HOSTS = ["app.metereolog.site"]
-CSRF_TRUSTED_ORIGINS = ["https://app.metereolog.site"]
+ALLOWED_HOSTS = ["app.metereolog.aru.ufsc.br"]
+CSRF_TRUSTED_ORIGINS = ["https://app.metereolog.aru.ufsc.br"]
 
 DATABASES = {
     'default': {

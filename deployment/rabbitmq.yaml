@@ -1,0 +1,24 @@
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: rabbitmq 
+  namespace: metereolog
+spec:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+  rabbitmq:
+    additionalPlugins:
+      - rabbitmq_top
+      - rabbitmq_shovel
+      - rabbitmq_federation
+      - rabbitmq_management
+      - rabbitmq_management_agent
+      - rabbitmq_mqtt
+      - rabbitmq_prometheus
+      - rabbitmq_web_dispatch

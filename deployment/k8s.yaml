@@ -1,0 +1,244 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metereolog-stack
+  namespace: metereolog
+  labels:
+    app: metereolog-stack
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: metereolog-stack
+  template:
+    metadata:
+      labels:
+        app: metereolog-stack
+    spec:
+      initContainers:
+        - name: migration-applier
+          image: claudinoac/metereolog-server:v1
+          imagePullPolicy: Always
+          command: ["python", "manage.py", "migrate", "--noinput"]
+          env:
+          - name: SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: secret_key
+          - name: RABBITMQ_ADDR 
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: rabbitmq_host
+          - name: RABBITMQ_DEFAULT_USER
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: rabbitmq_user
+          - name: RABBITMQ_DEFAULT_PASS
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: rabbitmq_pwd
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: postgres_user
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: postgres_pwd
+          - name: DJANGO_SETTINGS_MODULE
+            value: "metereolog.settings.production"
+          - name: POSTGRES_DB
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: postgres_db
+          - name: POSTGRES_HOST
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: postgres_host
+      containers:
+      - name: api
+        image: claudinoac/metereolog-server:v1
+        imagePullPolicy: Always
+        command: ["gunicorn", "-c", "gunicorn.conf.py", "metereolog.wsgi:application"]
+        ports:
+        - containerPort: 8009
+        env:
+          - name: SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: secret_key
+          - name: RABBITMQ_ADDR 
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: rabbitmq_host
+          - name: RABBITMQ_DEFAULT_USER
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: rabbitmq_user
+          - name: RABBITMQ_DEFAULT_PASS
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: rabbitmq_pwd
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: postgres_user
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: postgres_pwd
+          - name: DJANGO_SETTINGS_MODULE
+            value: "metereolog.settings.production"
+          - name: POSTGRES_DB
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: postgres_db
+          - name: POSTGRES_HOST
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: postgres_host
+      - name: msg-hub
+        image: claudinoac/metereolog-server:v1
+        imagePullPolicy: Always
+        command: ["python", "manage.py", "run_message_hub"]
+        env:
+          - name: SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: secret_key
+          - name: RABBITMQ_DEFAULT_USER
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: rabbitmq_user
+          - name: RABBITMQ_DEFAULT_PASS
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: rabbitmq_pwd
+          - name: RABBITMQ_ADDR 
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: rabbitmq_host
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: postgres_user
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: postgres_pwd
+          - name: DJANGO_SETTINGS_MODULE
+            value: "metereolog.settings.production"
+          - name: POSTGRES_HOST
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: postgres_host
+          - name: POSTGRES_DB
+            valueFrom:
+              secretKeyRef:
+                name: metereolog-api-creds
+                key: postgres_db
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metereolog-ui
+  namespace: metereolog
+  labels:
+    app: metereolog-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: metereolog-ui
+  template:
+    metadata:
+      labels:
+        app: metereolog-ui
+    spec:
+      containers:
+      - name: ui
+        image: claudinoac/metereolog-ui:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8010
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: metereolog-api
+spec:
+  type: ClusterIP 
+  selector:
+    app: metereolog-stack
+  ports:
+    - protocol: TCP
+      port: 8009
+      targetPort: 8009
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: metereolog-ui
+spec:
+  type: ClusterIP 
+  selector:
+    app: metereolog-ui
+  ports:
+    - protocol: TCP
+      port: 8010
+      targetPort: 8010
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: metereolog
+  namespace: metereolog
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`app.metereolog.aru.ufsc.br`) && (PathPrefix(`/api`) || PathPrefix(`/admin`) || PathPrefix(`/api-auth`) || PathPrefix(`/media`))
+      kind: Rule
+      observability:
+        accessLogs: true
+        metrics: true
+        tracing: true
+      services:
+        - name: metereolog-api
+          port: 8009
+    - match: Host(`app.metereolog.aru.ufsc.br`) && PathPrefix(`/`)
+      kind: Rule
+      observability:
+        accessLogs: true
+        metrics: true
+        tracing: true
+      services:
+        - name: metereolog-ui
+          port: 8010
+  tls:
+    secretName: metereolog-tls
+---
+
