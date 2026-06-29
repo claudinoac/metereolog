@@ -36,7 +36,7 @@ Pluviometer::Pluviometer(gpio_num_t pin) {
 
 void Pluviometer::interrupt_routine() {
     portENTER_CRITICAL_ISR(&pluviometer_mutex);
-    if ((millis() - this->contact_bounce) > 50 ) { // debounce the switch contact (50ms)
+    if ((millis() - this->contact_bounce) > 300) { // debounce the switch contact (300ms)
         this->reed_count += 1;              // add one pulse to the count
         this->contact_bounce = millis();
     }
