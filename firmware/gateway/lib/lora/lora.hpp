@@ -35,6 +35,7 @@ class LoRa {
         float get_snr();
         bool packet_received = false;
         String get_packet();
+        void change_mode(Mode mode);
 
     private:
         SX1262 *radio = nullptr;

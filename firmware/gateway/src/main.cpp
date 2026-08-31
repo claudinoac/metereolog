@@ -40,6 +40,8 @@ const char *mqtt_topic = ENV_BROKER_TOPIC;
 #define CODING_RATE   4/5
 #define LORA_POWER    22.0
 
+#define ACK_ATTEMPTS  5
+
 /* ================= OLED CONFIGS ===============*/
 
 #define OLED_SDA (gpio_num_t) 17
@@ -285,5 +287,15 @@ void loop() {
             + " Alt:" + String(packet.bmp_alt)
             + "\nBar: " + String(packet.bmp_press)
         );
+
+        int i = 0;
+        lora->change_mode(Transmitter);
+        while (i < ACK_ATTEMPTS) {
+            String ack_message = String(packet.device_id);
+            lora->send_message(ack_message);
+            i++;
+            delay(1000);    // Wait 1 second before sending the next ACK attempt
+        }
+        lora->change_mode(Receptor);
     }
 }

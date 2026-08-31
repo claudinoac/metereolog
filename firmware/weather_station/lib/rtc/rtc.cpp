@@ -18,9 +18,12 @@
  */
 #include "rtc.hpp"
 
+#define CALL_NTP_SERVER false
+
 RTC::RTC(TwoWire *i2c_channel) {
     this->i2c_channel = i2c_channel;
-    this->rtc_clock = new RTC_DS1307();
+    // this->rtc_clock = new RTC_DS1307();
+    this->rtc_clock = new RTC_DS3231();
     int countdown = 10;
     while (!this->rtc_clock->begin(i2c_channel)) {
         Serial.println("Error while configuring RTC module");
@@ -32,14 +35,14 @@ RTC::RTC(TwoWire *i2c_channel) {
     }
     DateTime current_time = this->rtc_clock->now();
     time_t timestamp;
-    if (!this->rtc_clock->isrunning() || !current_time.isValid() || current_time.year() < 2026) {
+    if (/*!this->rtc_clock->isrunning() ||*/ !current_time.isValid() || current_time.year() < 2026 || CALL_NTP_SERVER) {
         Serial.println("Configuring RTC...");
         time_t ntp_timestamp = this->get_ntp_time();
         if (ntp_timestamp > 0) {
             this->rtc_clock->adjust(ntp_timestamp);
             delay(1000);
-            Serial.print("Post-adjust: ");
-            Serial.println(this->rtc_clock->isrunning() ? "YES" : "NO");
+            // Serial.print("Post-adjust: ");
+            // Serial.println(this->rtc_clock->isrunning() ? "YES" : "NO");
         }
     }
     timestamp = this->rtc_clock->now().unixtime();

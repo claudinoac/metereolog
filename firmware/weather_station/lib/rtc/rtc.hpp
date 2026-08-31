@@ -14,7 +14,8 @@ class RTC {
         time_t get_time();
     private:
         TwoWire *i2c_channel;
-        RTC_DS1307 *rtc_clock; 
+        // RTC_DS1307 *rtc_clock; 
+        RTC_DS3231 *rtc_clock;
         time_t  get_ntp_time(); 
         const char *ntp_server = "pool.ntp.org";
 };

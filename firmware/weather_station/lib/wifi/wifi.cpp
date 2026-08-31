@@ -73,3 +73,19 @@ Wifi::Wifi(char *ssid, char* password, char *ap_ssid, char *ap_pwd) {
 WiFiClientSecure *Wifi::getClient() {
     return this->client;
 }
+
+void Wifi::sleep() {
+    WiFi.disconnect(true);
+    WiFi.mode(WIFI_OFF);
+}
+
+void Wifi::wake() {
+    WiFi.mode(WIFI_STA); 
+    WiFi.begin(this->ssid, this->password);
+    
+    int count = 10;     // tries to reconnect to Wi-Fi for 10 times (5 seconds)
+    while(WiFi.status() != WL_CONNECTED && count > 0) {
+        delay(500);
+        count--;
+    }
+}

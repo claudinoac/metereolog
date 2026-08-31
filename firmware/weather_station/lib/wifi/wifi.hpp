@@ -32,6 +32,8 @@ class Wifi {
         Wifi(char *ssid, char *password);
         Wifi(char *ssid, char* password, char *ap_ssid, char *ap_pwd);
         WiFiClientSecure *getClient();
+        void sleep();
+        void wake();
 };
 
 #endif

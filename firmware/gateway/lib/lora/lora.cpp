@@ -155,3 +155,13 @@ bool LoRa::send_message(String message) {
     }
 }
 
+void LoRa::change_mode(Mode mode) {
+    this->mode = mode;
+    if (this->mode == Receptor) {
+        this->radio->setPacketReceivedAction(on_receive); 
+        this->radio->startReceive();
+    } else if (this->mode == Transmitter) {
+        this->radio->clearPacketReceivedAction();
+        this->radio->standby(); 
+    }
+}

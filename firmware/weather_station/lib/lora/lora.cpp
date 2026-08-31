@@ -93,3 +93,25 @@ bool LoRa::send_message(String message) {
     return false;
 }
 
+void LoRa::sleep() {
+    if (this->radio != nullptr) {
+        this->radio->sleep();
+    }
+}
+
+void LoRa::wake() {
+    if (this->radio != nullptr) {
+        this->radio->standby();
+    }
+}
+
+void LoRa::change_mode(Mode mode) {
+    this->mode = mode;
+    if (this->mode == Receptor) {
+        this->radio->setPacketReceivedAction(on_receive); 
+        this->radio->startReceive();
+    } else if (this->mode == Transmitter) {
+        this->radio->clearPacketReceivedAction();
+        this->radio->standby(); 
+    }
+}
