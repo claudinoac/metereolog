@@ -30,10 +30,21 @@ const char *client_id = ENV_BROKER_CLIENT_ID;
 const char *mqtt_topic = ENV_BROKER_TOPIC;
 
 /* ================= LORA CONFIGS ===============*/
-#define NSS_LORA   (gpio_num_t)   8
-#define DIO1_LORA  (gpio_num_t)   14
-#define RESET_LORA (gpio_num_t)   12
-#define BUSY_LORA  (gpio_num_t)   13
+/* ================= For Heltec v3 ==============*/ 
+// #define NSS_LORA   (gpio_num_t)   8
+// #define DIO1_LORA  (gpio_num_t)   14
+// #define RESET_LORA (gpio_num_t)   12
+// #define BUSY_LORA  (gpio_num_t)   13
+/* ================= For TTGO v2.1 ==============*/ 
+#define NSS_LORA   (gpio_num_t)   18
+#define DIO1_LORA  (gpio_num_t)   26
+#define RESET_LORA (gpio_num_t)   14
+#define BUSY_LORA  (gpio_num_t)   33
+#define SCK     5
+#define MISO    19
+#define MOSI    27
+#define DIO0    26
+/* ==============================================*/
 #define BAND          915.6
 #define BANDWIDTH     62.5
 #define SPREADING_FACTOR 10
@@ -42,14 +53,14 @@ const char *mqtt_topic = ENV_BROKER_TOPIC;
 
 /* ================= OLED CONFIGS ===============*/
 
-#define OLED_SDA (gpio_num_t) 17
-#define OLED_SCL (gpio_num_t) 18
-#define OLED_RST (gpio_num_t) 21
-#define VEXT_PIN (gpio_num_t) 36
-#define WIDTH  128
-#define HEIGHT 64
-
-OLED *display;
+// #define OLED_SDA (gpio_num_t) 17
+// #define OLED_SCL (gpio_num_t) 18
+// #define OLED_RST (gpio_num_t) 21
+// #define VEXT_PIN (gpio_num_t) 36
+// #define WIDTH  128
+// #define HEIGHT 64
+// 
+// OLED *display;
 
 /* ================= RTC CONFIGS ===============*/
 
@@ -74,11 +85,12 @@ const char *bmp_alt_id = ENV_BMP_ALT_ID;
 const char *bmp_press_id = ENV_BMP_PRESS_ID;
 const char *voltmeter_id = ENV_VOLTMETER_ID;
 const char *amperimeter_id = ENV_AMPERIMETER_ID;
+// const char *power_id = ENV_POWER_ID;
 const char *rssi_id = ENV_RSSI_ID;
 const char *snr_id = ENV_SNR_ID;
 
 JsonDocument doc;
-char msg_buffer[1024]; 
+char msg_buffer[1280]; 
 
 /* ==============================================*/
 
@@ -101,6 +113,7 @@ typedef struct __attribute__((packed)) {
     float bmp_press;
     float voltage;
     float current;
+    // float power;
 } Packet;
 
 void deserialize_packet(String raw_packet, Packet* p) {
@@ -119,6 +132,7 @@ void deserialize_packet(String raw_packet, Packet* p) {
         &p->bmp_press,
         &p->voltage,
         &p->current
+       //  &p->power
     );
 }
 
@@ -137,25 +151,26 @@ void pretty_print_packet(const Packet* p, String snr, String rssi) {
   Serial.print("    bmp_press = ");   Serial.print(p->bmp_press);  Serial.println(",");
   Serial.print("    voltage = ");     Serial.print(p->voltage);    Serial.println(",");
   Serial.print("    current = ");     Serial.print(p->current);    Serial.println(",");
+  // Serial.print("    power = ");     Serial.print(p->power);    Serial.println(",");
   Serial.print("    snr = ");    Serial.print(snr);   Serial.println(",");
   Serial.print("    rssi = ");    Serial.print(rssi);   Serial.println(",");
   Serial.println("}");
 }
 
-void setup_display() {
-    display = new OLED(OLED_SDA, OLED_SCL, OLED_RST, VEXT_PIN, WIDTH, HEIGHT);
-    display->begin();
-}
+// void setup_display() {
+//     display = new OLED(OLED_SDA, OLED_SCL, OLED_RST, VEXT_PIN, WIDTH, HEIGHT);
+//     display->begin();
+// }
 
-unsigned long getTime() {
-  time_t now;
-  struct tm timeinfo;
-  while(!getLocalTime(&timeinfo)) {
-    Serial.println("Failed to obtain time");
-  }
-  time(&now);
-  return now;
-}
+// unsigned long getTime() {
+//   time_t now;
+//   struct tm timeinfo;
+//   while(!getLocalTime(&timeinfo)) {
+//     Serial.println("Failed to obtain time");
+//   }
+//   time(&now);
+//   return now;
+// }
 
 // void setup_rtc() {
 //     Serial.println("Starting configuration of RTC...");
@@ -178,30 +193,31 @@ unsigned long getTime() {
 
 void setup() {
     Serial.begin(115200);
-    setup_display();
-    display->display_message("UFSC Metereolog Gateway v1!\nInitializing...");
+    // setup_display();
+    // display->display_message("UFSC Metereolog Gateway v1!\nInitializing...");
     Serial.println("Initializing Receptor...");
     Serial.println("Display configured...");
     lora->begin();
     try {
         wifi_client = new Wifi((char *)ssid, (char *)password);
-        mqtt_client = new MQTT(wifi_client, (char *)broker_addr, broker_port, (char *)broker_user, (char *)broker_password, (char *)client_id);
-        configTime(0, 0, ntpServer);
-        display->display_message("Connected to wifi " + String(ssid) + "and \n Broker " + String(broker_addr));
+        mqtt_client = new MQTT(wifi_client, (char *)broker_addr, broker_port, (char *)broker_user, (char *)broker_password);
+        mqtt_client->connect((char *)mqtt_topic);
+        // configTime(0, 0, ntpServer);
+        // display->display_message("Connected to wifi " + String(ssid) + "and \n Broker " + String(broker_addr));
     } catch (const std::runtime_error& error) {
         Serial.println("Wifi and MQTT not configured.");        
-        display->display_message("Wifi and MQTT not configured.");
+        // display->display_message("Wifi and MQTT not configured.");
     }
     delay(500);
 }
 
-String get_time_formatted() {
-    time_t timestamp = getTime();
-    struct tm *t = localtime(&timestamp);
-    char buf[20];
-    strftime(buf, sizeof(buf), "%d/%m/%y %H:%M", t);
-    return String(buf);
-}
+// String get_time_formatted() {
+//     time_t timestamp = getTime();
+//     struct tm *t = localtime(&timestamp);
+//     char buf[20];
+//     strftime(buf, sizeof(buf), "%d/%m/%y %H:%M", t);
+//     return String(buf);
+// }
 
 void build_json(Packet *packet, String snr, String rssi) {
     JsonObject dht_temp = doc[dht_temp_id].to<JsonObject>();
@@ -241,6 +257,10 @@ void build_json(Packet *packet, String snr, String rssi) {
     amperimeter_data["value"] = packet->current;
     amperimeter_data["timestamp"] = packet->timestamp;
 
+    // JsonObject power_data = doc[power_id].to<JsonObject>();
+    // power_data["value"] = packet->power;
+    // power_data["timestamp"] = packet->timestamp;
+
     JsonObject snr_data = doc[snr_id].to<JsonObject>();
     snr_data["value"] = snr;
     snr_data["timestamp"] = packet->timestamp;
@@ -262,13 +282,12 @@ void loop() {
     // Serial.println(packet);
     Packet packet;
     String raw_packet = lora->get_packet();
+    // Serial.println(raw_packet);
     if (raw_packet.length() > 0) {
-        // Serial.println(raw_packet);
         String SNR = String(lora->get_snr());
         String RSSI = String(lora->get_rssi());
         deserialize_packet(raw_packet, &packet);
         pretty_print_packet(&packet, SNR, RSSI);
-        // packet.timestamp = getTime();
         Serial.print("\n\n\n");
         build_json(&packet, SNR, RSSI);
         serializeJsonPretty(doc, Serial);
@@ -276,14 +295,14 @@ void loop() {
             serializeJson(doc, msg_buffer);
             mqtt_client->publish((char *)mqtt_topic, msg_buffer);
         }
-        display->display_message(
-            "SNR:" + SNR 
-            + " RSSI:" + RSSI 
-            + "\nTime: " + String(packet.timestamp)
-            + "\nTemp: " + String(packet.bmp_temp) + " " + String(packet.dht_temp)
-            + "\nHum: " + String(packet.dht_hum)
-            + " Alt:" + String(packet.bmp_alt)
-            + "\nBar: " + String(packet.bmp_press)
-        );
+        // display->display_message(
+        //     "SNR:" + SNR 
+        //     + " RSSI:" + RSSI 
+        //     + "\nTime: " + String(packet.timestamp)
+        //     + "\nTemp: " + String(packet.bmp_temp) + " " + String(packet.dht_temp)
+        //     + "\nHum: " + String(packet.dht_hum)
+        //     + " Alt:" + String(packet.bmp_alt)
+        //     + "\nBar: " + String(packet.bmp_press)
+        // );
     }
 }

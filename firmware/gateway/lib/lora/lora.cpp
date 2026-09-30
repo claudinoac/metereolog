@@ -39,7 +39,8 @@ LoRa::LoRa(
 bool LoRa::begin() {
     Serial.println(F("Configurando LoRa..."));
     this->radio_module = new Module(this->nss_pin, this->dio1_pin, this->rst_pin, this->busy_pin);
-    this->radio = new SX1262(this->radio_module);
+    // this->radio = new SX1262(this->radio_module);
+    this->radio = new SX1276(this->radio_module);
     int state = this->radio->begin(this->band);
     this->radio->setBandwidth(this->bandwidth);
     this->radio->setSpreadingFactor(this->spreading_factor);

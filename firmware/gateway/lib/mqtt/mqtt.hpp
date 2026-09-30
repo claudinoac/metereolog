@@ -24,8 +24,8 @@
 #include "wifi.hpp"
 
 
-#define MSG_BUFFER_SIZE  1024
-#define MQTT_MAX_PACKET_SIZE 1024
+#define MSG_BUFFER_SIZE  1280
+#define MQTT_MAX_PACKET_SIZE 1536
 
 class MQTT {
     PubSubClient *client;
@@ -40,7 +40,7 @@ class MQTT {
     public:
         MQTT(
             Wifi *wifi_client, char *broker_addr, int broker_port,
-            char *username, char *password, char *client_id = NULL
+            char *username, char *password
         );
 
         void connect(char *topic);

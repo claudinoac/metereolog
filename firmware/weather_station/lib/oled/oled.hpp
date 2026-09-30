@@ -22,6 +22,7 @@ class OLED {
         );
         void begin();
         void display_message(String message);
+        void disable();
 
     private:
         gpio_num_t sda_pin;

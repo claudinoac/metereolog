@@ -37,7 +37,8 @@ class LoRa {
         String get_packet();
 
     private:
-        SX1262 *radio = nullptr;
+        // SX1262 *radio = nullptr;
+        SX1276 *radio = nullptr;
         Module *radio_module = nullptr;
         float current_rssi;
         float current_snr;

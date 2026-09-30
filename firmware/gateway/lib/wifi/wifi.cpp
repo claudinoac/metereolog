@@ -37,6 +37,7 @@ Wifi::Wifi(char *ssid, char* password) {
             throw std::runtime_error("Wifi not configured.");
         }
     }
+    WiFi.setSleep(false);
     randomSeed(micros());
     Serial.println("");
     Serial.println("WiFi connected");

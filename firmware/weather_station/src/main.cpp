@@ -25,11 +25,14 @@
 #include "lora.hpp"
 #include "oled.hpp"
 #include "rtc.hpp"
+#include "ina219.hpp"
+#include "ads1115.hpp"
 
 #define ELEGANTOTA_USE_ASYNC_WEBSERVER 1
 #define uS_TO_S_FACTOR 1000000ULL
 #define TIME_TO_SLEEP  5
 #define TX_CYCLES 5
+#define PRG_PIN 0
 
 /* ============ WIFI CONFIGS ===================*/ 
 const char* ap_ssid = ENV_WIFI_AP_SSID;
@@ -51,7 +54,8 @@ unsigned long epochTime;
 #define DIO1_LORA  (gpio_num_t)   14
 #define RESET_LORA (gpio_num_t)   12
 #define BUSY_LORA  (gpio_num_t)   13
-#define BAND          915.6
+// #define BAND          915.6
+#define BAND          917
 #define BANDWIDTH     62.5
 #define SPREADING_FACTOR 10
 #define CODING_RATE   4/5
@@ -82,9 +86,9 @@ TwoWire *i2c_channel = new TwoWire(1);
 /* ============ SDCARD CONFIGS ===================*/ 
 
 #define SD_SCLK 48 // SCK
-#define SD_MISO 33 // MISO
+#define SD_MISO 26 // MISO
 #define SD_MOSI 47 // MOSI
-#define SD_CS 26 // CS
+#define SD_CS 33 // CS
 
 SPIClass *sd_spi = nullptr; 
 
@@ -92,7 +96,7 @@ SPIClass *sd_spi = nullptr;
 #define ANEMOSCOPE_PIN (gpio_num_t) 2
 #define ANEMOMETER_PIN (gpio_num_t) 5
 #define DHT_PIN (gpio_num_t) 34
-#define PLUVIOMETER_PIN (gpio_num_t) 0
+#define PLUVIOMETER_PIN (gpio_num_t) 35
 #define SEA_LEVEL_HPA (1013.25)
 #define VOLTMETER_PIN (gpio_num_t) 3
 #define AMPERIMETER_PIN (gpio_num_t) 4
@@ -136,6 +140,11 @@ AmperimeterInfo amperimeter_reading;
 
 RTC *rtc;
 
+INA219 *power_sensor;
+PowerInfo power_info;
+
+ADS1115 *adc_sensor;
+
 /* ============ MISC VARIABLES ===================*/ 
 
 typedef struct __attribute__((packed)) {
@@ -150,8 +159,8 @@ typedef struct __attribute__((packed)) {
     float bmp_alt;
     float bmp_press;
     float voltage;
-    float raw_voltage;
     float current;
+    float power;
 } Packet;
 
 JsonDocument doc;
@@ -160,8 +169,15 @@ AsyncWebServer server(80);
 
 char msg_buffer[255]; 
 
+volatile bool data_loop_running = false;
+volatile bool is_display_enabled = false;
+Packet *current_packet;
+hw_timer_t *timer = NULL;
+SemaphoreHandle_t global_lock;
 
-String serialize_packet(const Packet* p) {
+/* ============ GLOBAL UTIL METHODS ===================*/ 
+
+String serialize_packet(const Packet *p) {
     String raw_packet = "";
     raw_packet += String(p->device_id) + "|";
     raw_packet += String(p->timestamp) + "|";
@@ -174,7 +190,8 @@ String serialize_packet(const Packet* p) {
     raw_packet += String(p->bmp_alt) + "|";
     raw_packet += String(p->bmp_press) + "|";
     raw_packet += String(p->voltage) + "|";
-    raw_packet += String(p->current);
+    raw_packet += String(p->current) + "|";
+    raw_packet += String(p->power);
     return raw_packet;
 }
 
@@ -192,6 +209,7 @@ void pretty_print_packet(const Packet* p) {
   Serial.print("    bmp_press = ");   Serial.print(p->bmp_press);  Serial.println(",");
   Serial.print("    voltage = ");     Serial.print(p->voltage);    Serial.println(",");
   Serial.print("    current = ");     Serial.print(p->current);    Serial.println(",");
+  Serial.print("    power = ");       Serial.print(p->power);
   Serial.println("}");
 }
 
@@ -219,9 +237,10 @@ void setup_i2c() {
     // }
     // pinMode(I2C_SCL, INPUT_PULLUP);
     // pinMode(I2C_SDA, INPUT_PULLUP);
-    if (!i2c_channel->begin(I2C_SDA, I2C_SCL, 100000)) {
+    if (!i2c_channel->begin(I2C_SDA, I2C_SCL)) {
         Serial.println("Cannot initialize custom bmp I2C Channel");
     };
+    i2c_channel->setTimeout(100);
 }
 
 void setup_sensors() {
@@ -230,9 +249,10 @@ void setup_sensors() {
     anemometer = new Anemometer(ANEMOMETER_PIN);
     pluviometer = new Pluviometer(PLUVIOMETER_PIN);
     bmp_sensor = new BMPSensor(i2c_channel, SEA_LEVEL_HPA);
-    voltmeter = new Voltmeter(VOLTMETER_PIN, VOLTMETER_UP_RES, VOLTMETER_LOW_RES);
-    amperimeter = new Amperimeter(AMPERIMETER_PIN, AMPERIMETER_UP_RES, AMPERIMETER_LOW_RES);
-
+    // voltmeter = new Voltmeter(VOLTMETER_PIN, VOLTMETER_UP_RES, VOLTMETER_LOW_RES);
+    // amperimeter = new Amperimeter(AMPERIMETER_PIN, AMPERIMETER_UP_RES, AMPERIMETER_LOW_RES);
+    power_sensor = new INA219(i2c_channel);
+    adc_sensor = new ADS1115(i2c_channel);
 }
 
 void setup_rtc() {
@@ -390,35 +410,65 @@ void loop_webserver() {
   ElegantOTA.loop();
 }
 
-Packet read_sensors() {
-    Packet packet;
+void read_sensors() {
+    current_packet = (Packet *)malloc(sizeof(Packet));
     time_t current_time = rtc->get_time();
-    packet.timestamp = current_time;
-    // packet.timestamp = 0;
-    strcpy(packet.device_id, device_id);
+    current_packet->timestamp = current_time;
+    strcpy(current_packet->device_id, device_id);
     dht_reading = dht_sensor->read();
-    packet.dht_temp = dht_reading.temperature;
-    packet.dht_hum = dht_reading.humidity; 
+    current_packet->dht_temp = dht_reading.temperature;
+    current_packet->dht_hum = dht_reading.humidity; 
     wind_direction_reading = anemoscope->read();
-    strcpy(packet.wind_dir, wind_direction_reading.direction);
+    strcpy(current_packet->wind_dir, wind_direction_reading.direction);
     anemometer_reading = anemometer->read();
-    packet.wind_speed = anemometer_reading.wind_speed;
+    current_packet->wind_speed = anemometer_reading.wind_speed;
     pluviometer_reading = pluviometer->read();
-    packet.rain_gauge = pluviometer_reading.collected_volume;
+    current_packet->rain_gauge = pluviometer_reading.collected_volume;
     bmp_reading = bmp_sensor->read();
-    packet.bmp_temp = bmp_reading.temperature;
-    packet.bmp_alt = bmp_reading.altitude;
-    packet.bmp_press = bmp_reading.pressure;
-    voltmeter_reading = voltmeter->read();
-    packet.voltage = voltmeter_reading.voltage;
-    packet.raw_voltage = voltmeter_reading.raw_voltage;
-    amperimeter_reading = amperimeter->read();
-    packet.current = amperimeter_reading.current;
-    return packet;
+    current_packet->bmp_temp = bmp_reading.temperature;
+    current_packet->bmp_alt = bmp_reading.altitude;
+    current_packet->bmp_press = bmp_reading.pressure;
+    power_info = power_sensor->read();
+    current_packet->voltage = power_info.voltage;
+    current_packet->current = power_info.current;
+    current_packet->power = power_info.power;
 }
 
+void IRAM_ATTR turn_off_display() {
+    is_display_enabled = false;
+}
 
+void IRAM_ATTR run_display() {
+    is_display_enabled = true;
+}
+
+void data_loop(void *pvParameters) {
+    while(true) {
+        int lora_error_count = 0;
+        String raw_packet = "";
+        if (xSemaphoreTake(global_lock, portMAX_DELAY) == pdTRUE) {
+            read_sensors();
+            raw_packet = serialize_packet(current_packet);
+            pretty_print_packet(current_packet);
+            xSemaphoreGive(global_lock);
+        }
+        if (!raw_packet.isEmpty()) {
+            // write_line("aru_0_data.txt", raw_packet);
+            if (lora->send_message(raw_packet)) {
+                lora_error_count = 0;
+            } else {
+                if (lora_error_count >= 3) {
+                    esp_restart();
+                } else {
+                    lora_error_count += 1;
+                }
+            };
+            delay(2000);
+        }
+    }
+}
 void setup(){
+    global_lock = xSemaphoreCreateMutex();
     Serial.begin(115200);
     Serial.println("Metereolog Weather Station ARU 01 Starting...");
     setup_display();
@@ -431,36 +481,59 @@ void setup(){
     } catch (const std::runtime_error& error) {
         esp_restart();
     }
-    setup_sdcard();
+    // setup_sdcard();
+    pinMode(PRG_PIN, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(PRG_PIN), run_display, FALLING);
     // setup_webserver();
     display->display_message("Configured!");
+    // timer = timerBegin(0, 80, true);
+    // timerAttachInterrupt(timer, &turn_off_display, true);
+    // timerAlarmWrite(timer, 5000000, true);
+    // timerAlarmEnable(timer);
+
     // loop();
     // esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * 60ULL * uS_TO_S_FACTOR);
     // esp_deep_sleep_start();
+    xTaskCreatePinnedToCore(
+      data_loop,   /* Task function */
+      "Data Loop", /* Name for debugging */
+      4096,           /* Stack depth in bytes */
+      NULL,           /* Pass input parameters */
+      1,              /* Task priority */
+      NULL,           /* Task handle */
+      1               /* Core ID (0 or 1) */
+    );
 };
 
+
 void loop() {
-    int cycle = 0;
-    while(cycle < TX_CYCLES) {
-        Packet packet = read_sensors();
-        // loop_webserver();
-        String raw_packet = serialize_packet(&packet);
-        // Serial.print("RAW Message: "); Serial.println(raw_packet);
-        write_line("aru_0_data.txt", raw_packet);
-        lora->send_message(raw_packet);
-        display->display_message(
-            "Time: " + rtc->get_time_formatted()
-            + "\nTemp: " + String(packet.bmp_temp) + " " + String(packet.dht_temp)
-            + "\nHum: " + String(packet.dht_hum)
-            + " Press: " + String(packet.bmp_press)
-            + "\nVolt" + String(packet.voltage) + " " + String(packet.raw_voltage)
-            + "\nAlt: " + String(packet.bmp_alt)
-            + " Dir: " + packet.wind_dir
-            + "\n Wind Speed: : " + packet.wind_speed
-            + "\n Volt: " + String(packet.voltage) + "V Amp: " + String(packet.current) + "A"
-        );
-        cycle++;
-    }
-    delay(2000);
+    // if (!is_display_enabled) {
+        // display->disable();
+    // } else {
+        if (xSemaphoreTake(global_lock, portMAX_DELAY) == pdTRUE) {
+            if (current_packet != NULL) {
+
+                float adc_voltage = adc_sensor->read_channel(0);
+                Serial.print("ADC READ: ");
+                Serial.println(adc_voltage);
+                display->display_message(
+                    "Time: " + rtc->get_time_formatted()
+                    + "\nTemp: " + String(current_packet->bmp_temp) + " " + String(current_packet->dht_temp)
+                    + "\nHum: " + String(current_packet->dht_hum)
+                    + " P: " + String(current_packet->bmp_press)
+                    + "\nV: " + String(current_packet->voltage)
+                    + " A: " + String(current_packet->current)
+                    + "\n Pw:" + String(current_packet->power) + "AD:" + String(adc_voltage)
+                    + "\nAlt: " + String(current_packet->bmp_alt) + " m"
+                    + " Dir: " + current_packet->wind_dir
+                    + "\n Wind Speed: : " + current_packet->wind_speed
+                );
+                // timerAlarmWrite(timer, 5000000, true);
+                // timerAlarmEnable(timer);
+            }
+            xSemaphoreGive(global_lock);
+        }
+    // }
+    delay(500);
 }
 

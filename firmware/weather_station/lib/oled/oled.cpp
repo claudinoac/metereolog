@@ -31,6 +31,7 @@ void OLED::begin(){
 };
 
 void OLED::display_message(String message) {
+    this->display->setPowerSave(0);
     char *buffer = (char *)message.c_str();
     char *bufferPtr = strtok(buffer, "\n");
     int y_pos = 12;
@@ -44,3 +45,7 @@ void OLED::display_message(String message) {
     }
     this->display->sendBuffer();
 };
+
+void OLED::disable() {
+    this->display->setPowerSave(1);
+}
