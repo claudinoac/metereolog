@@ -31,14 +31,6 @@
 #define TIME_TO_SLEEP  5
 #define TX_CYCLES 5
 
-/* ============ PACKET SEND CONFIGS ===================*/
-#define ACK_ATTEMPTS 5
-
-unsigned long previousMillis = 0;
-unsigned long previousAckMillis = 0;
-const unsigned long packetInterval = PACKET_INTERVAL_MINUTES * 60 * 1000;
-bool forceFirstSend = true;
-
 /* ============ WIFI CONFIGS ===================*/ 
 const char* ap_ssid = ENV_WIFI_AP_SSID;
 const char* ap_pwd = ENV_WIFI_AP_PWD;
@@ -169,11 +161,21 @@ AsyncWebServer server(80);
 char msg_buffer[255]; 
 
 
-void serialize_packet(const Packet* p, char* buffer, size_t max_len) {
-    snprintf(buffer, max_len, "%s|%lu|%s|%.2f|%.2f|%.2f|%.2f|%.2f|%.2f|%.2f|%.2f|%.2f",
-             p->device_id, p->timestamp, p->wind_dir, p->dht_hum, p->dht_temp,
-             p->wind_speed, p->rain_gauge, p->bmp_temp, p->bmp_alt,
-             p->bmp_press, p->voltage, p->current);
+String serialize_packet(const Packet* p) {
+    String raw_packet = "";
+    raw_packet += String(p->device_id) + "|";
+    raw_packet += String(p->timestamp) + "|";
+    raw_packet += String(p->wind_dir) + "|";
+    raw_packet += String(p->dht_hum) + "|";
+    raw_packet += String(p->dht_temp) + "|";
+    raw_packet += String(p->wind_speed) + "|";
+    raw_packet += String(p->rain_gauge) + "|";
+    raw_packet += String(p->bmp_temp) + "|";
+    raw_packet += String(p->bmp_alt) + "|";
+    raw_packet += String(p->bmp_press) + "|";
+    raw_packet += String(p->voltage) + "|";
+    raw_packet += String(p->current);
+    return raw_packet;
 }
 
 void pretty_print_packet(const Packet* p) {
@@ -337,7 +339,7 @@ bool write_line(String filename, String line) {
 }
 
 void setup_network() {
-    lora = new LoRa(NSS_LORA, DIO1_LORA, RESET_LORA, BUSY_LORA, BAND, BANDWIDTH, SPREADING_FACTOR, CODING_RATE, LORA_POWER, Transmitter);
+    lora = new LoRa(NSS_LORA, DIO1_LORA, RESET_LORA, BUSY_LORA, BAND, BANDWIDTH, SPREADING_FACTOR, CODING_RATE, LORA_POWER, Receptor);
     wifi_client = new Wifi((char *)ssid, (char *)password, (char *)ap_ssid, (char *)ap_pwd);
     lora->begin();
 }
@@ -402,7 +404,7 @@ Packet read_sensors() {
     anemometer_reading = anemometer->read();
     packet.wind_speed = anemometer_reading.wind_speed;
     pluviometer_reading = pluviometer->read();
-    packet.rain_gauge = pluviometer_reading.collected_rain_mm;
+    packet.rain_gauge = pluviometer_reading.collected_volume;
     bmp_reading = bmp_sensor->read();
     packet.bmp_temp = bmp_reading.temperature;
     packet.bmp_alt = bmp_reading.altitude;
@@ -418,9 +420,9 @@ Packet read_sensors() {
 
 void setup(){
     Serial.begin(115200);
-    Serial.println("Metereolog Weather Station ARU 01 Starting...");
+    Serial.println("Metereolog Weather Station ARUM 01 Starting...");
     setup_display();
-    display->display_message("Metereolog Weather Station\nARU 01 Starting...");
+    display->display_message("Metereolog Weather Station\nARUM 01 Starting...");
     try {
         setup_i2c();
         setup_network();
@@ -438,71 +440,26 @@ void setup(){
 };
 
 void loop() {
-    unsigned long currentMillis = millis();
-    if (currentMillis - previousMillis >= packetInterval || forceFirstSend) {
-        previousMillis = currentMillis;
-        forceFirstSend = false;
-
-        if (!forceFirstSend) lora->wake();
-
+    int cycle = 0;
+    while(cycle < TX_CYCLES) {
         Packet packet = read_sensors();
-        serialize_packet(&packet, msg_buffer, sizeof(msg_buffer));
-        String raw_packet = String(msg_buffer);
-
-        // write_line("aru_0_data.txt", raw_packet);
+        // loop_webserver();
+        String raw_packet = serialize_packet(&packet);
+        // Serial.print("RAW Message: "); Serial.println(raw_packet);
+        write_line("aru_0_data.txt", raw_packet);
         lora->send_message(raw_packet);
-
-        snprintf(msg_buffer, sizeof(msg_buffer),
-                 "Time: %s\nRain: %.2f\nTemp: %.2f %.2f\nHum: %.2f Press: %.2f\nVolt: %.2f %.2f\nAlt: %.2f Dir: %s\nWind Speed: %.2f",
-                 rtc->get_time_formatted().c_str(),
-                 packet.rain_gauge,
-                 packet.bmp_temp, packet.dht_temp,
-                 packet.dht_hum, packet.bmp_press,
-                 packet.voltage, packet.raw_voltage,
-                 packet.bmp_alt, packet.wind_dir,
-                 packet.wind_speed);
-        
-        display->display_message(String(msg_buffer));
-
-        /* lora->change_mode(Receptor);
-        previousAckMillis = millis();
-        while (millis() - previousAckMillis < ACK_ATTEMPTS * 1000) {
-            String ack_message = lora->get_packet();
-            if (ack_message == String(device_id)) {
-                Serial.println("ACK received from gateway.");
-                break;
-            }
-            delay(10);  // Delay for the WDT
-        }
-        lora->change_mode(Transmitter); */
-
-        lora->sleep();
+        display->display_message(
+            "Time: " + rtc->get_time_formatted()
+            + "\nTemp: " + String(packet.bmp_temp) + " " + String(packet.dht_temp)
+            + "\nHum: " + String(packet.dht_hum)
+            + " Press: " + String(packet.bmp_press)
+            + "\nVolt" + String(packet.voltage) + " " + String(packet.raw_voltage)
+            + "\nAlt: " + String(packet.bmp_alt)
+            + " Dir: " + packet.wind_dir
+            + "\n Wind Speed: : " + packet.wind_speed
+            + "\n Volt: " + String(packet.voltage) + "V Amp: " + String(packet.current) + "A"
+        );
+        cycle++;
     }
-
-    /* Packet packet = read_sensors();
-    // loop_webserver();
-    // serializeJsonPretty(doc, Serial);
-    // serializeJson(doc, msg_buffer);
-    String raw_packet = serialize_packet(&packet);
-    // Serial.print("RAW Message: "); Serial.println(raw_packet);
-    write_line("aru_0_data.txt", raw_packet);
-    lora->send_message(raw_packet);
-    // String message = lora->get_packet();
-    display->display_message(
-        "Time: " + rtc->get_time_formatted()
-        + "\nTemp: " + String(packet.bmp_temp) + " " + String(packet.dht_temp)
-        + "\nHum: " + String(packet.dht_hum)
-        + " Press: " + String(packet.bmp_press)
-        + "\nVolt" + String(packet.voltage) + " " + String(packet.raw_voltage)
-        + "\nAlt: " + String(packet.bmp_alt)
-        + " Dir: " + packet.wind_dir
-        + "\n Wind Speed: : " + packet.wind_speed
-        + "\n Volt: " + String(packet.voltage) + "V Amp: " + String(packet.current) + "A"
-    );
-    // String time = rtc->get_time_formatted();
-    // display->display_message("Time: " + time);
-    // Serial.print("Time: ");
-    // Serial.println(time); */
-    delay(100);
+    delay(2000);
 }
-

@@ -1,4 +1,4 @@
-// RANSMISSOR OTIMIZADO - Heltec LoRa 32 V3
+// TRANSMISSOR OTIMIZADO - Heltec LoRa 32 V3
 #include <Arduino.h>
 #include <RadioLib.h>
 #include <SPI.h>
@@ -39,8 +39,6 @@ const char *mqtt_topic = ENV_BROKER_TOPIC;
 #define SPREADING_FACTOR 10
 #define CODING_RATE   4/5
 #define LORA_POWER    22.0
-
-#define ACK_ATTEMPTS  5
 
 /* ================= OLED CONFIGS ===============*/
 
@@ -287,15 +285,5 @@ void loop() {
             + " Alt:" + String(packet.bmp_alt)
             + "\nBar: " + String(packet.bmp_press)
         );
-
-        int i = 0;
-        lora->change_mode(Transmitter);
-        while (i < ACK_ATTEMPTS) {
-            String ack_message = String(packet.device_id);
-            lora->send_message(ack_message);
-            i++;
-            delay(1000);    // Wait 1 second before sending the next ACK attempt
-        }
-        lora->change_mode(Receptor);
     }
 }
