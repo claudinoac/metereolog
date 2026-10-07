@@ -423,7 +423,7 @@ void read_sensors() {
     anemometer_reading = anemometer->read();
     current_packet->wind_speed = anemometer_reading.wind_speed;
     pluviometer_reading = pluviometer->read();
-    current_packet->rain_gauge = pluviometer_reading.collected_volume;
+    current_packet->rain_gauge = pluviometer_reading.collected_rain_mm;
     bmp_reading = bmp_sensor->read();
     current_packet->bmp_temp = bmp_reading.temperature;
     current_packet->bmp_alt = bmp_reading.altitude;
